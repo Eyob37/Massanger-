@@ -19,8 +19,8 @@
     <button onclick="sendMessage()">Send</button>
 
     <script>
-        const ws = new WebSocket("ws://localhost:3000"); // Update this with your server URL
-
+        const ws = new WebSocket("wss://your-vercel-project-name.vercel.app/api/server");
+        
         ws.onmessage = (event) => {
             const chatBox = document.getElementById("chat-box");
             const msg = document.createElement("div");

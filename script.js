@@ -108,6 +108,7 @@ function login() {
       const user = userCredential.user;
       loginMessage.innerText = "Login successful! Redirecting...";
 
+      localStorage.setItem('logined', true);  
       // Redirect to the main app page (you can create this later)
       setTimeout(() => {
         window.location.href = "main.html";

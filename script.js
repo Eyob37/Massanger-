@@ -43,10 +43,12 @@ function sendEmail(userName, userEmail, verificationCode) {
 }
 
 // Sign Up Function
+// Sign Up Function
 function signUp() {
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const message = document.getElementById("message");
+  const auth = getAuth(); // Get Firebase Auth instance
 
   if (!name || !email) {
     message.innerText = "Please enter all fields!";
@@ -58,7 +60,7 @@ function signUp() {
     .then((methods) => {
       if (methods.length > 0) {
         message.innerText = "Email is already in use. Please use a different email.";
-        return;
+        return; // Don't proceed with user creation if email is already registered
       }
 
       // Create user with email and a temporary password

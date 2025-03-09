@@ -17,16 +17,16 @@
 
   <script>
 // Handle Verification
-document.getElementById('verification-form').addEventListener('submit', function (e) {
+document.getElementById("verification-form").addEventListener("submit", function (e) {
   e.preventDefault();
-  const enteredCode = document.getElementById('verification-code').value;
-  const savedCode = localStorage.getItem('verificationCode');
+  const enteredCode = document.getElementById("verification-code").value;
+  const savedCode = localStorage.getItem("verificationCode");
 
   if (enteredCode === savedCode) {
-    alert('Verification successful!');
-    window.location.href = 'password.html';
+    alert("Verification successful!");
+    window.location.href = "password.html";
   } else {
-    alert('Invalid verification code');
+    alert("Invalid verification code");
   }
 });
 

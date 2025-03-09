@@ -1,48 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Chat</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        #chat-box { width: 80%; height: 400px; border: 1px solid black; overflow-y: auto; margin: auto; padding: 10px; }
-        #message { width: 70%; padding: 10px; }
-        button { padding: 10px; }
-        .message { text-align: left; margin: 5px 0; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messenger App - Login/Signup</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>WebSocket Chat</h2>
-    <div id="chat-box"></div>
-    <input type="text" id="message" placeholder="Type a message..." />
-    <button onclick="sendMessage()">Send</button>
+  <div class="container">
+    <h1>Welcome to Messenger</h1>
+    <div id="login-section">
+      <h2>Login</h2>
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
+    </div>
 
-    <script>
-        const ws = new WebSocket("wss://your-vercel-project-name.vercel.app/api/server");
-        
-        ws.onmessage = (event) => {
-            const chatBox = document.getElementById("chat-box");
-            const msg = document.createElement("div");
-            msg.classList.add("message");
-            msg.innerText = event.data;
-            chatBox.appendChild(msg);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        };
+    <div id="signup-section" style="display: none;">
+      <h2>Sign Up</h2>
+      <form id="signup-form">
+        <input type="text" id="signup-name" placeholder="Name" required>
+        <input type="email" id="signup-email" placeholder="Email" required>
+        <button type="submit">Sign Up</button>
+      </form>
+      <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+    </div>
+  </div>
 
-        function sendMessage() {
-            const input = document.getElementById("message");
-            if (input.value.trim() !== "") {
-                ws.send(input.value);
-                const chatBox = document.getElementById("chat-box");
-                const msg = document.createElement("div");
-                msg.classList.add("message");
-                msg.innerText = input.value;
-                chatBox.appendChild(msg);
-                chatBox.scrollTop = chatBox.scrollHeight;
-                input.value = "";
-            }
-        }
-    </script>
+  <script src="script.js"></script>
 </body>
 </html>

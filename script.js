@@ -2,6 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { getAuth, fetchSignInMethodsForEmail, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -20,11 +21,32 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth();
 
+(function() {
+    emailjs.init("7UGwi5Gy7R_A48GpD"); // Replace with your actual EmailJS Public Key
+})();
+
+function sendEmail(userName, userEmail, verificationCode) {
+    var params = {
+        name: userName, 
+        email: userEmail, 
+        code: verificationCode // Pass the generated code
+    };
+
+    emailjs.send("service_sjp7z9x", "template_wi5pwvs", params)
+        .then(function(response) {
+            alert("Verification email sent successfully! Check your inbox.");
+            window.location.href = "verification.html"; // Redirect user to verification page
+        }, function(error) {
+            alert("Failed to send email. Error: " + JSON.stringify(error));
+        });
+}
+
 // Sign Up Function
 function signUp() {
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const message = document.getElementById("message");
+  const auth = getAuth(); // Get Firebase Auth instance
 
   if (!name || !email) {
     message.innerText = "Please enter all fields!";
@@ -32,8 +54,7 @@ function signUp() {
   }
 
   // Check if the email is already registered
-  getAuth()
-    .fetchSignInMethodsForEmail(email)
+  fetchSignInMethodsForEmail(auth, email)
     .then((methods) => {
       if (methods.length > 0) {
         message.innerText = "Email is already in use. Please use a different email.";
@@ -41,36 +62,25 @@ function signUp() {
       }
 
       // Create user with email and a temporary password
-      createUserWithEmailAndPassword(auth, email, "tempPassword123")
-        .then((userCredential) => {
-          const user = userCredential.user;
+      return createUserWithEmailAndPassword(auth, email, "tempPassword123");
+    })
+    .then((userCredential) => {
+      if (!userCredential) return; // If user exists, don't continue
 
-          // Save user data to Firebase Realtime Database
-          set(ref(db, "users/" + user.uid), {
-            name: name,
-            email: email,
-            verified: false // Email is not verified yet
-          })
-            .then(() => {
-              // Send email verification
-              sendEmailVerification(user)
-                .then(() => {
-                  message.innerText = "Verification email sent! Check your inbox.";
-                })
-                .catch((error) => {
-                  message.innerText = "Failed to send verification email: " + error.message;
-                });
-            })
-            .catch((error) => {
-              message.innerText = "Failed to save user data: " + error.message;
-            });
-        })
-        .catch((error) => {
-          message.innerText = error.message;
-        });
+      const user = userCredential.user;
+      message.innerText = "Account created! Sending verification email...";
+
+      // Generate a verification code (6-digit random number)
+      const verificationCode = Math.floor(100000 + Math.random() * 900000);
+
+      // Save verification code in localStorage
+      localStorage.setItem("verificationCode", verificationCode);
+
+      // Send verification email using EmailJS
+      sendEmail(name, email, verificationCode);
     })
     .catch((error) => {
-      message.innerText = "Error checking email: " + error.message;
+      message.innerText = "Error: " + error.message;
     });
 }
 

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main App</title>
+  <link rel="stylesheet" href="style.css"> <!-- Optional: Add your CSS file -->
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to the Messenger App!</h1>
+    <p>You are now logged in.</p>
+    <button id="logout-button">Logout</button>
+  </div>
+
+  <!-- Add Firebase and your script -->
+  <script type="module">
+// Logout Function
+function logout() {
+  auth.signOut()
+    .then(() => {
+      alert("You have been logged out.");
+      window.location.href = "index.html";
+    })
+    .catch((error) => {
+      alert("Logout failed: " + error.message);
+    });
+}
+
+// Attach the logout function to the logout button
+if (document.getElementById("logout-button")) {
+  document.getElementById("logout-button").addEventListener("click", logout);
+}
+
+  </script>
+</body>
+</html>

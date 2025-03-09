@@ -43,31 +43,31 @@ function sendEmail(userName, userEmail, verificationCode) {
 }
 
 // Sign Up Function
-// Sign Up Function
 function signUp() {
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const message = document.getElementById("message");
-  const auth = getAuth(); // Get Firebase Auth instance
 
   if (!name || !email) {
     message.innerText = "Please enter all fields!";
     return;
   }
 
+  const auth = getAuth();
+
   // Check if the email is already registered
   fetchSignInMethodsForEmail(auth, email)
     .then((methods) => {
       if (methods.length > 0) {
         message.innerText = "Email is already in use. Please use a different email.";
-        return; // Don't proceed with user creation if email is already registered
+        return; // Exit if the email is already in use
       }
 
-      // Create user with email and a temporary password
+      // If email is not used, proceed to create user
       return createUserWithEmailAndPassword(auth, email, "tempPassword123");
     })
     .then((userCredential) => {
-      if (!userCredential) return; // If user exists, don't continue
+      if (!userCredential) return; // Exit if user already exists
 
       const user = userCredential.user;
       message.innerText = "Account created! Sending verification email...";
@@ -82,7 +82,12 @@ function signUp() {
       sendEmail(name, email, verificationCode);
     })
     .catch((error) => {
-      message.innerText = "Error: " + error.message;
+      // Handle any other errors like network issues or unexpected problems
+      if (error.code === "auth/email-already-in-use") {
+        message.innerText = "The email is already in use. Please use a different email.";
+      } else {
+        message.innerText = "Error: " + error.message;
+      }
     });
 }
 

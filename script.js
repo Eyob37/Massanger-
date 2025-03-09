@@ -1,8 +1,7 @@
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-import { getAuth, fetchSignInMethodsForEmail, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -10,7 +9,7 @@ const firebaseConfig = {
   authDomain: "eyobchat-1769b.firebaseapp.com",
   databaseURL: "https://eyobchat-1769b-default-rtdb.firebaseio.com",
   projectId: "eyobchat-1769b",
-  storageBucket: "eyobchat-1769b.firebasestorage.app",
+  storageBucket: "eyobchat-1769b.appspot.com", // FIXED storageBucket
   messagingSenderId: "175396149369",
   appId: "1:175396149369:web:b310d2fb7132cacad11ca8",
   measurementId: "G-0XX85HVLKS"
@@ -19,12 +18,14 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const auth = getAuth();
+const auth = getAuth(app);
 
+// Initialize EmailJS
 (function() {
     emailjs.init("7UGwi5Gy7R_A48GpD"); // Replace with your actual EmailJS Public Key
 })();
 
+// Function to Send Email Verification using EmailJS
 function sendEmail(userName, userEmail, verificationCode) {
     var params = {
         name: userName, 
@@ -46,7 +47,6 @@ function signUp() {
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const message = document.getElementById("message");
-  const auth = getAuth(); // Get Firebase Auth instance
 
   if (!name || !email) {
     message.innerText = "Please enter all fields!";

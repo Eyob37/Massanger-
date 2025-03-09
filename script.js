@@ -31,33 +31,46 @@ function signUp() {
     return;
   }
 
-  // Create user with email and a temporary password
-  createUserWithEmailAndPassword(auth, email, "tempPassword123")
-    .then((userCredential) => {
-      const user = userCredential.user;
+  // Check if the email is already registered
+  getAuth()
+    .fetchSignInMethodsForEmail(email)
+    .then((methods) => {
+      if (methods.length > 0) {
+        message.innerText = "Email is already in use. Please use a different email.";
+        return;
+      }
 
-      // Save user data to Firebase Realtime Database
-      set(ref(db, "users/" + user.uid), {
-        name: name,
-        email: email,
-        verified: false // Email is not verified yet
-      })
-        .then(() => {
-          // Send email verification
-          sendEmailVerification(user)
+      // Create user with email and a temporary password
+      createUserWithEmailAndPassword(auth, email, "tempPassword123")
+        .then((userCredential) => {
+          const user = userCredential.user;
+
+          // Save user data to Firebase Realtime Database
+          set(ref(db, "users/" + user.uid), {
+            name: name,
+            email: email,
+            verified: false // Email is not verified yet
+          })
             .then(() => {
-              message.innerText = "Verification email sent! Check your inbox.";
+              // Send email verification
+              sendEmailVerification(user)
+                .then(() => {
+                  message.innerText = "Verification email sent! Check your inbox.";
+                })
+                .catch((error) => {
+                  message.innerText = "Failed to send verification email: " + error.message;
+                });
             })
             .catch((error) => {
-              message.innerText = "Failed to send verification email: " + error.message;
+              message.innerText = "Failed to save user data: " + error.message;
             });
         })
         .catch((error) => {
-          message.innerText = "Failed to save user data: " + error.message;
+          message.innerText = error.message;
         });
     })
     .catch((error) => {
-      message.innerText = error.message;
+      message.innerText = "Error checking email: " + error.message;
     });
 }
 

@@ -1,76 +1,99 @@
-// Initialize EmailJS
-(function () {
-  emailjs.init("7UGwi5Gy7R_A48GpD"); // Replace with your EmailJS User ID
-})();
+// Import Firebase modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-// Function to send verification email
-function sendEmail(userName, userEmail, verificationCode) {
-  var params = {
-    name: userName,
-    email: userEmail,
-    code: verificationCode, // Pass the generated code
-  };
+// Your Firebase configuration (replace with your actual config)
+const firebaseConfig = {
+  apiKey: "AIzaSyCzv6OiVIoE-088je9pSFKjUwlSQaWp3hQ",
+  authDomain: "massanger-a2479.firebaseapp.com",
+  databaseURL: "https://massanger-a2479-default-rtdb.firebaseio.com",
+  projectId: "massanger-a2479",
+  storageBucket: "massanger-a2479.appspot.com",
+  messagingSenderId: "140554568529",
+  appId: "1:140554568529:web:f11de10d3e905e7cf30970",
+  measurementId: "G-NMFKL8ZMV5"
+};
 
-  emailjs
-    .send("service_sjp7z9x", "template_wi5pwvs", params) // Replace with your Service ID and Template ID
-    .then(
-      function (response) {
-        alert("Verification email sent successfully!");
-      },
-      function (error) {
-        alert("Failed to send email. Error: " + JSON.stringify(error));
-      }
-    );
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth();
+
+// Sign Up Function
+function signUp() {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const message = document.getElementById("message");
+
+  if (!name || !email) {
+    message.innerText = "Please enter all fields!";
+    return;
+  }
+
+  // Create user with email and a temporary password
+  createUserWithEmailAndPassword(auth, email, "tempPassword123")
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      // Save user data to Firebase Realtime Database
+      set(ref(db, "users/" + user.uid), {
+        name: name,
+        email: email,
+        verified: false // Email is not verified yet
+      })
+        .then(() => {
+          // Send email verification
+          sendEmailVerification(user)
+            .then(() => {
+              message.innerText = "Verification email sent! Check your inbox.";
+            })
+            .catch((error) => {
+              message.innerText = "Failed to send verification email: " + error.message;
+            });
+        })
+        .catch((error) => {
+          message.innerText = "Failed to save user data: " + error.message;
+        });
+    })
+    .catch((error) => {
+      message.innerText = error.message;
+    });
 }
 
-// Toggle between login and signup forms
-document.getElementById("show-signup").addEventListener("click", function (e) {
-  e.preventDefault();
-  document.getElementById("login-section").style.display = "none";
-  document.getElementById("signup-section").style.display = "block";
-});
-
-document.getElementById("show-login").addEventListener("click", function (e) {
-  e.preventDefault();
-  document.getElementById("signup-section").style.display = "none";
-  document.getElementById("login-section").style.display = "block";
-});
-
-// Handle Signup
-document.getElementById("signup-form").addEventListener("submit", function (e) {
-  e.preventDefault();
-  const name = document.getElementById("signup-name").value;
-  const email = document.getElementById("signup-email").value;
-
-  // Generate a random verification code
-  const verificationCode = Math.floor(100000 + Math.random() * 900000);
-
-  // Save user data temporarily (for demo purposes)
-  localStorage.setItem("tempName", name);
-  localStorage.setItem("tempEmail", email);
-  localStorage.setItem("verificationCode", verificationCode);
-
-  // Send verification email using EmailJS
-  sendEmail(name, email, verificationCode);
-
-  // Redirect to verification page
-  window.location.href = "verification.html";
-});
-
-// Handle Login
-document.getElementById("login-form").addEventListener("submit", function (e) {
-  e.preventDefault();
+// Login Function
+function login() {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
+  const loginMessage = document.getElementById("login-message");
 
-  // Retrieve saved user data
-  const savedEmail = localStorage.getItem("email");
-  const savedPassword = localStorage.getItem("password");
-
-  if (email === savedEmail && password === savedPassword) {
-    alert("Login successful!");
-    window.location.href = "main.html";
-  } else {
-    alert("Invalid email or password");
+  if (!email || !password) {
+    loginMessage.innerText = "Please enter email and password!";
+    return;
   }
-});
+
+  // Sign in the user
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      loginMessage.innerText = "Login successful! Redirecting...";
+
+      // Redirect to the main app page (you can create this later)
+      setTimeout(() => {
+        window.location.href = "main.html";
+      }, 2000);
+    })
+    .catch((error) => {
+      loginMessage.innerText = "Login failed: " + error.message;
+    });
+}
+
+// Attach the signUp function to the signup button
+if (document.getElementById("signup-button")) {
+  document.getElementById("signup-button").addEventListener("click", signUp);
+}
+
+// Attach the login function to the login button
+if (document.getElementById("login-button")) {
+  document.getElementById("login-button").addEventListener("click", login);
+}

@@ -1,4 +1,3 @@
-
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
@@ -54,21 +53,19 @@ function signUp() {
     return;
   }
 
-  const auth = getAuth();
-
   // Check if the email is already registered
   fetchSignInMethodsForEmail(auth, email)
     .then((methods) => {
       if (methods.length > 0) {
         message.innerText = "Email is already in use. Please use a different email.";
-        return; // Exit if the email is already in use
+        return;
       }
 
-      // If email is not used, proceed to create user
+      // Create user with email and a temporary password
       return createUserWithEmailAndPassword(auth, email, "tempPassword123");
     })
     .then((userCredential) => {
-      if (!userCredential) return; // Exit if user already exists
+      if (!userCredential) return; // If user exists, don't continue
 
       const user = userCredential.user;
       message.innerText = "Account created! Sending verification email...";
@@ -83,12 +80,7 @@ function signUp() {
       sendEmail(name, email, verificationCode);
     })
     .catch((error) => {
-      // Handle any other errors like network issues or unexpected problems
-      if (error.code === "auth/email-already-in-use") {
-        message.innerText = "The email is already in use. Please use a different email.";
-      } else {
-        message.innerText = "Error: " + error.message;
-      }
+      message.innerText = "Error: " + error.message;
     });
 }
 
@@ -109,7 +101,6 @@ function login() {
       const user = userCredential.user;
       loginMessage.innerText = "Login successful! Redirecting...";
 
-      
       // Redirect to the main app page (you can create this later)
       setTimeout(() => {
         window.location.href = "main.html";

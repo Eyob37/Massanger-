@@ -1,15 +1,22 @@
+// Check if the user is already logged in and redirect if so
+let logined = localStorage.getItem('logined') || false;
+
+if (logined) {
+   window.location.href = "main.html"; // Redirect to main page if logged in
+}
+
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-// Your Firebase configuration
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAu24f6vmreUJOjTVpH4NQ1zhP5LyTC2s0",
   authDomain: "eyobchat-1769b.firebaseapp.com",
   databaseURL: "https://eyobchat-1769b-default-rtdb.firebaseio.com",
   projectId: "eyobchat-1769b",
-  storageBucket: "eyobchat-1769b.appspot.com", // FIXED storageBucket
+  storageBucket: "eyobchat-1769b.appspot.com",
   messagingSenderId: "175396149369",
   appId: "1:175396149369:web:b310d2fb7132cacad11ca8",
   measurementId: "G-0XX85HVLKS"
@@ -17,7 +24,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 const auth = getAuth(app);
 
 // Initialize EmailJS
@@ -25,18 +31,18 @@ const auth = getAuth(app);
     emailjs.init("7UGwi5Gy7R_A48GpD"); // Replace with your actual EmailJS Public Key
 })();
 
-// Function to Send Email Verification using EmailJS
+// Function to send email verification
 function sendEmail(userName, userEmail, verificationCode) {
     var params = {
-        name: userName, 
-        email: userEmail, 
-        code: verificationCode // Pass the generated code
+        name: userName,
+        email: userEmail,
+        code: verificationCode
     };
 
     emailjs.send("service_sjp7z9x", "template_wi5pwvs", params)
         .then(function(response) {
             alert("Verification email sent successfully! Check your inbox.");
-            window.location.href = "verification.html"; // Redirect user to verification page
+            window.location.href = "verification.html"; // Redirect to verification page
         }, function(error) {
             alert("Failed to send email. Error: " + JSON.stringify(error));
         });
@@ -46,28 +52,27 @@ function sendEmail(userName, userEmail, verificationCode) {
 function signUp() {
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
   const message = document.getElementById("message");
 
-  if (!name || !email) {
+  if (!name || !email || !password) {
     message.innerText = "Please enter all fields!";
     return;
   }
-
-  const auth = getAuth();
 
   // Check if the email is already registered
   fetchSignInMethodsForEmail(auth, email)
     .then((methods) => {
       if (methods.length > 0) {
         message.innerText = "Email is already in use. Please use a different email.";
-        return; // Exit if the email is already in use
+        return;
       }
 
-      // If email is not used, proceed to create user
-      return createUserWithEmailAndPassword(auth, email, "tempPassword123");
+      // Create user with email and password
+      return createUserWithEmailAndPassword(auth, email, password);
     })
     .then((userCredential) => {
-      if (!userCredential) return; // Exit if user already exists
+      if (!userCredential) return;
 
       const user = userCredential.user;
       message.innerText = "Account created! Sending verification email...";
@@ -82,12 +87,7 @@ function signUp() {
       sendEmail(name, email, verificationCode);
     })
     .catch((error) => {
-      // Handle any other errors like network issues or unexpected problems
-      if (error.code === "auth/email-already-in-use") {
-        message.innerText = "The email is already in use. Please use a different email.";
-      } else {
-        message.innerText = "Error: " + error.message;
-      }
+      message.innerText = "Error: " + error.message;
     });
 }
 
@@ -108,8 +108,10 @@ function login() {
       const user = userCredential.user;
       loginMessage.innerText = "Login successful! Redirecting...";
 
-      localStorage.setItem('logined', true);  
-      // Redirect to the main app page (you can create this later)
+      // Save logged-in state
+      localStorage.setItem('logined', true);
+
+      // Redirect to the main app page
       setTimeout(() => {
         window.location.href = "main.html";
       }, 2000);

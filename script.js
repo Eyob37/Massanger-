@@ -5,14 +5,14 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, se
 
 // Your Firebase configuration (replace with your actual config)
 const firebaseConfig = {
-  apiKey: "AIzaSyCzv6OiVIoE-088je9pSFKjUwlSQaWp3hQ",
-  authDomain: "massanger-a2479.firebaseapp.com",
-  databaseURL: "https://massanger-a2479-default-rtdb.firebaseio.com",
-  projectId: "massanger-a2479",
-  storageBucket: "massanger-a2479.appspot.com",
-  messagingSenderId: "140554568529",
-  appId: "1:140554568529:web:f11de10d3e905e7cf30970",
-  measurementId: "G-NMFKL8ZMV5"
+  apiKey: "AIzaSyAu24f6vmreUJOjTVpH4NQ1zhP5LyTC2s0",
+  authDomain: "eyobchat-1769b.firebaseapp.com",
+  databaseURL: "https://eyobchat-1769b-default-rtdb.firebaseio.com",
+  projectId: "eyobchat-1769b",
+  storageBucket: "eyobchat-1769b.firebasestorage.app",
+  messagingSenderId: "175396149369",
+  appId: "1:175396149369:web:b310d2fb7132cacad11ca8",
+  measurementId: "G-0XX85HVLKS"
 };
 
 // Initialize Firebase

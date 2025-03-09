@@ -3,35 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Messenger App - Login/Signup</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="style.css"> <!-- Optional: Add your CSS file -->
 </head>
 <body>
   <div class="container">
-    <h1>Welcome to EyobChat</h1>
-    <div id="login-section">
-      <h2>Login</h2>
-      <form id="login-form">
-        <input type="email" id="login-email" placeholder="Email" required>
-        <input type="password" id="login-password" placeholder="Password" required>
-        <button type="submit">Login</button>
-      </form>
-      <p>Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
-    </div>
-
-    <div id="signup-section" style="display: none;">
-      <h2>Sign Up</h2>
-      <form id="signup-form">
-        <input type="text" id="signup-name" placeholder="Name" required>
-        <input type="email" id="signup-email" placeholder="Email" required>
-        <button type="submit">Sign Up</button>
-      </form>
-      <p>Already have an account? <a href="#" id="show-login">Login</a></p>
-    </div>
+    <h1>Sign Up</h1>
+    <form id="signup-form">
+      <input type="text" id="name" placeholder="Name" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <button type="button" id="signup-button">Sign Up</button>
+    </form>
+    <p id="message"></p> <!-- This will display messages to the user -->
+    <p>Already have an account? <a href="login.html">Login</a></p>
   </div>
 
-  <!-- Include EmailJS Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-  <script src="script.js"></script>
+  <!-- Add Firebase and your script -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>

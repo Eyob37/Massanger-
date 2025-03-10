@@ -23,7 +23,7 @@ body {
 
 /* Sidebar Styles */
 #menu {
-  position: relative;
+  position: absolute;
   background-color: #2e2e2e;
   color: #ffffff;
   width: 40px;

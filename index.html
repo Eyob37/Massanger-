@@ -9,13 +9,21 @@
 <body>
   <div class="app-container">
     <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="sidebar-header">
-        <h2>Eyob Chat</h2>
-        <button id="logout-button">Logout</button>
-      </div>
-      <div class="sidebar-menu">
-        <button id="change-password-button">Change Password</button>
+    <div id="menu">
+      <input onclick="controlWidth()" id="checkbox" type="checkbox">
+      <label class="toggle" for="checkbox">
+        <div id="bar1" class="bars"></div>
+        <div id="bar2" class="bars"></div>
+        <div id="bar3" class="bars"></div>
+      </label>
+      <div class="sidebar-content">
+        <div class="sidebar-header">
+          <h2>Eyob Chat</h2>
+          <button id="logout-button">Logout</button>
+        </div>
+        <div class="sidebar-menu">
+          <button id="change-password-button">Change Password</button>
+        </div>
       </div>
     </div>
 
@@ -117,6 +125,19 @@
           document.getElementById("password-message").innerText = "Error updating password: " + error.message;
         });
     });
+  
+    // Function to control sidebar width and height
+    function controlWidth() {
+      let menu = document.getElementById("menu");
+      let checkBox = document.getElementById("checkbox");
+      if (checkBox.checked) {
+        menu.style.width = "250px";
+        menu.style.height = "90%";
+      } else {
+        menu.style.width = "40px";
+        menu.style.height = "40px";
+      }
+    }
   </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Main App</title>
-  <link rel="stylesheet" href="style.css"> <!-- Optional: Add your CSS file -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
@@ -13,24 +13,50 @@
     <button id="logout-button">Logout</button>
   </div>
 
-  <!-- Add Firebase and your script -->
   <script type="module">
-// Logout Function
-function logout() {
-  auth.signOut()
-    .then(() => {
-      alert("You have been logged out.");
-      window.location.href = "index.html";
-    })
-    .catch((error) => {
-      alert("Logout failed: " + error.message);
-    });
-}
+    // Import Firebase modules
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 
-// Attach the logout function to the logout button
-if (document.getElementById("logout-button")) {
-  document.getElementById("logout-button").addEventListener("click", logout);
-}
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAu24f6vmreUJOjTVpH4NQ1zhP5LyTC2s0",
+      authDomain: "eyobchat-1769b.firebaseapp.com",
+      databaseURL: "https://eyobchat-1769b-default-rtdb.firebaseio.com",
+      projectId: "eyobchat-1769b",
+      storageBucket: "eyobchat-1769b.appspot.com",
+      messagingSenderId: "175396149369",
+      appId: "1:175396149369:web:b310d2fb7132cacad11ca8",
+      measurementId: "G-0XX85HVLKS"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Check if user is logged in
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "index.html"; // Redirect to the login page if not logged in
+      }
+    });
+
+    // Logout Function
+    function logout() {
+      signOut(auth)
+        .then(() => {
+          alert("You have been logged out.");
+          window.location.href = "index.html"; // Redirect to the login page after logging out
+        })
+        .catch((error) => {
+          alert("Logout failed: " + error.message);
+        });
+    }
+
+    // Attach the logout function to the logout button
+    if (document.getElementById("logout-button")) {
+      document.getElementById("logout-button").addEventListener("click", logout);
+    }
 
   </script>
 </body>

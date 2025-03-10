@@ -4,18 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Main App</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="main style.css"> <!-- Updated link to the new stylesheet -->
 </head>
 <body>
   <div class="container">
-    <h1>Welcome to the Eyob chat App!</h1>
+    <h1>Welcome to the Eyob Chat App!</h1>
     <p>You are now logged in.</p>
+
+    <!-- Button to logout -->
     <button id="logout-button">Logout</button>
+
+    <!-- Button to open the Change Password form -->
+    <button id="change-password-button">Change Password</button>
+
+    <!-- Change Password Form (Initially Hidden) -->
+    <div id="change-password-form" style="display: none;">
+      <h2>Change Your Password</h2>
+      <form id="change-password-form-content">
+        <input type="password" id="new-password" placeholder="Enter new password" required>
+        <button type="submit">Update Password</button>
+      </form>
+      <p id="password-message"></p>
+    </div>
   </div>
 
   <script type="module">
     // Import Firebase modules
-    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getAuth, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 
     // Your Firebase configuration
@@ -58,6 +73,30 @@
       document.getElementById("logout-button").addEventListener("click", logout);
     }
 
+    // Show the Change Password form
+    document.getElementById("change-password-button").addEventListener("click", function() {
+      document.getElementById("change-password-form").style.display = "block";
+    });
+
+    // Handle password change
+    document.getElementById("change-password-form-content").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const newPassword = document.getElementById("new-password").value;
+      const user = auth.currentUser;
+
+      if (!newPassword) {
+        document.getElementById("password-message").innerText = "Please enter a new password.";
+        return;
+      }
+
+      updatePassword(user, newPassword)
+        .then(() => {
+          document.getElementById("password-message").innerText = "Password updated successfully!";
+        })
+        .catch((error) => {
+          document.getElementById("password-message").innerText = "Error updating password: " + error.message;
+        });
+    });
   </script>
 </body>
 </html>

@@ -103,7 +103,7 @@ function login() {
 
       // Redirect to the main app page (you can create this later)
       setTimeout(() => {
-        window.location.href = "main.html";
+        window.location.href = "index.html";
       }, 2000);
     })
     .catch((error) => {

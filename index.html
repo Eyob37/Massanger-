@@ -37,7 +37,7 @@
     // Check if user is logged in
     auth.onAuthStateChanged(user => {
       if (!user) {
-        window.location.href = "index.html"; // Redirect to the login page if not logged in
+        window.location.href = "signup.html"; // Redirect to the login page if not logged in
       }
     });
 
@@ -46,7 +46,7 @@
       signOut(auth)
         .then(() => {
           alert("You have been logged out.");
-          window.location.href = "index.html"; // Redirect to the login page after logging out
+          window.location.href = "signup.html"; // Redirect to the login page after logging out
         })
         .catch((error) => {
           alert("Logout failed: " + error.message);

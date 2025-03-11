@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eyob Chat App</title>
-  <link rel="stylesheet" href="telegram-style.css">
+  <link rel="stylesheet" href="telegram-style.css"> <!-- Updated stylesheet -->
 </head>
 <body>
   <div class="app-container">
@@ -22,8 +22,7 @@
           <button id="logout-button">Logout</button>
         </div>
         <div class="sidebar-menu">
-          <h3>Users</h3>
-          <ul id="user-list"></ul> <!-- User list -->
+          <button id="change-password-button">Change Password</button>
         </div>
       </div>
     </div>
@@ -31,22 +30,31 @@
     <!-- Main Chat Area -->
     <div class="chat-area">
       <div class="chat-header">
-        <h2>Chat with <span id="chat-with">No one</span></h2>
+        <h2>Welcome to Eyob Chat!</h2>
       </div>
-      <div class="chat-messages"></div> <!-- Messages appear here -->
+      <div class="chat-messages">
+        <p>You are now logged in.</p>
+      </div>
+    </div>
 
-      <div class="chat-input">
-        <input type="text" id="message-input" placeholder="Type a message...">
-        <button id="send-message">Send</button>
+    <!-- Change Password Form (Initially Hidden) -->
+    <div id="change-password-form" class="modal">
+      <div class="modal-content">
+        <h2>Change Your Password</h2>
+        <form id="change-password-form-content">
+          <input type="password" id="new-password" placeholder="Enter new password" required>
+          <button type="submit">Update Password</button>
+        </form>
+        <p id="password-message"></p>
+        <button id="close-modal">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- Firebase Scripts -->
   <script type="module">
+    // Import Firebase modules
+    import { getAuth, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getFirestore, collection, getDocs, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -63,132 +71,73 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
 
-    let currentReceiver = null; // Track selected user
-
-    // Check authentication
-    onAuthStateChanged(auth, (user) => {
+    // Check if user is logged in
+    auth.onAuthStateChanged(user => {
       if (!user) {
-        window.location.href = "signup.html"; // Redirect if not logged in
-      } else {
-        loadUsers();
+        window.location.href = "signup.html"; // Redirect to the login page if not logged in
       }
     });
 
-    // Function to load users
-    async function loadUsers() {
-      const usersRef = collection(db, "users");
-      const snapshot = await getDocs(usersRef);
-      const userList = document.getElementById("user-list");
-      userList.innerHTML = ""; // Clear previous users
-
-      snapshot.forEach(doc => {
-        const user = doc.data();
-        if (user.email !== auth.currentUser.email) { // Don't show current user
-          const userElement = document.createElement("li");
-          userElement.textContent = user.email;
-          userElement.addEventListener("click", () => startChat(user.email));
-          userList.appendChild(userElement);
-        }
-      });
+    // Logout Function
+    function logout() {
+      signOut(auth)
+        .then(() => {
+          alert("You have been logged out.");
+          window.location.href = "signup.html"; // Redirect to the login page after logging out
+        })
+        .catch((error) => {
+          alert("Logout failed: " + error.message);
+        });
     }
 
-    // Function to start chat
-    function startChat(receiverEmail) {
-      currentReceiver = receiverEmail;
-      document.getElementById("chat-with").textContent = receiverEmail;
-      loadMessages(currentReceiver);
+    // Attach the logout function to the logout button
+    if (document.getElementById("logout-button")) {
+      document.getElementById("logout-button").addEventListener("click", logout);
     }
 
-    // Function to send message
-    async function sendMessage() {
-      const senderEmail = auth.currentUser.email;
-      const messageText = document.getElementById("message-input").value;
+    // Show the Change Password form
+    document.getElementById("change-password-button").addEventListener("click", function() {
+      document.getElementById("change-password-form").style.display = "block";
+    });
 
-      if (!senderEmail || !currentReceiver || !messageText) {
-        alert("Please select a user and enter a message!");
+    // Close the modal
+    document.getElementById("close-modal").addEventListener("click", function() {
+      document.getElementById("change-password-form").style.display = "none";
+    });
+
+    // Handle password change
+    document.getElementById("change-password-form-content").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const newPassword = document.getElementById("new-password").value;
+      const user = auth.currentUser;
+
+      if (!newPassword) {
+        document.getElementById("password-message").innerText = "Please enter a new password.";
         return;
       }
 
-      const chatID = [senderEmail, currentReceiver].sort().join("_"); // Unique chat ID
-
-      try {
-        await addDoc(collection(db, "chats", chatID, "messages"), {
-          sender: senderEmail,
-          receiver: currentReceiver,
-          text: messageText,
-          timestamp: serverTimestamp()
+      updatePassword(user, newPassword)
+        .then(() => {
+          document.getElementById("password-message").innerText = "Password updated successfully!";
+        })
+        .catch((error) => {
+          document.getElementById("password-message").innerText = "Error updating password: " + error.message;
         });
-
-        document.getElementById("message-input").value = ""; // Clear input field
-      } catch (error) {
-        console.error("Error sending message:", error);
-      }
-    }
-
-    // Listen for messages
-    function loadMessages(receiverEmail) {
-      const senderEmail = auth.currentUser.email;
-      const chatID = [senderEmail, receiverEmail].sort().join("_");
-
-      const messagesRef = collection(db, "chats", chatID, "messages");
-      const q = query(messagesRef, orderBy("timestamp"));
-
-      onSnapshot(q, (snapshot) => {
-        const chatBox = document.querySelector(".chat-messages");
-        chatBox.innerHTML = ""; // Clear chat area
-
-        snapshot.forEach(doc => {
-          const message = doc.data();
-          displayMessage(message);
-        });
-      });
-    }
-
-    // Display messages
-    function displayMessage(message) {
-      const chatBox = document.querySelector(".chat-messages");
-      const messageElement = document.createElement("p");
-
-      if (message.sender === auth.currentUser.email) {
-        messageElement.textContent = `You: ${message.text}`;
-        messageElement.style.textAlign = "right";
-      } else {
-        messageElement.textContent = `${message.sender}: ${message.text}`;
-      }
-
-      chatBox.appendChild(messageElement);
-    }
-
-    // Send message event
-    document.getElementById("send-message").addEventListener("click", sendMessage);
-
-    // Logout function
-    function logout() {
-      signOut(auth).then(() => {
-        alert("You have been logged out.");
-        window.location.href = "signup.html";
-      }).catch((error) => {
-        alert("Logout failed: " + error.message);
-      });
-    }
-
-    // Attach logout event
-    document.getElementById("logout-button").addEventListener("click", logout);
+    });
   </script>
 
   <script>
-    function controlWidth() {
-      const menu = document.getElementById("menu");
-      const checkBox = document.getElementById("checkbox");
+  function controlWidth() {
+    const menu = document.getElementById("menu");
+    const checkBox = document.getElementById("checkbox");
 
-      if (checkBox.checked) {
-        menu.classList.add("expanded"); // Expand the menu
-      } else {
-        menu.classList.remove("expanded"); // Collapse the menu
-      }
+    if (checkBox.checked) {
+      menu.classList.add("expanded"); // Expand the menu
+    } else {
+      menu.classList.remove("expanded"); // Collapse the menu
     }
-  </script>
+  }
+</script>
 </body>
 </html>

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eyob Chat App</title>
-  <link rel="stylesheet" href="telegram-style.css"> <!-- Updated stylesheet -->
+  <link rel="stylesheet" href="telegram-style.css">
 </head>
 <body>
   <div class="app-container">
@@ -21,8 +21,13 @@
           <h2>Eyob Chat</h2>
           <button id="logout-button">Logout</button>
         </div>
+
+        <!-- User Search Bar -->
+        <input type="text" id="search-user" placeholder="Search User..." onkeyup="filterUsers()">
+
         <div class="sidebar-menu">
-          <button id="change-password-button">Change Password</button>
+          <h3>Users</h3>
+          <ul id="user-list"></ul> <!-- User list -->
         </div>
       </div>
     </div>
@@ -30,31 +35,17 @@
     <!-- Main Chat Area -->
     <div class="chat-area">
       <div class="chat-header">
-        <h2>Welcome to Eyob Chat!</h2>
+        <h2>Chat with <span id="chat-with">No one</span></h2>
       </div>
-      <div class="chat-messages">
-        <p>You are now logged in.</p>
-      </div>
-    </div>
-
-    <!-- Change Password Form (Initially Hidden) -->
-    <div id="change-password-form" class="modal">
-      <div class="modal-content">
-        <h2>Change Your Password</h2>
-        <form id="change-password-form-content">
-          <input type="password" id="new-password" placeholder="Enter new password" required>
-          <button type="submit">Update Password</button>
-        </form>
-        <p id="password-message"></p>
-        <button id="close-modal">Close</button>
-      </div>
+      <div class="chat-messages"></div> <!-- Messages appear here -->
     </div>
   </div>
 
+  <!-- Firebase Scripts -->
   <script type="module">
-    // Import Firebase modules
-    import { getAuth, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -71,73 +62,81 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    // Check if user is logged in
-    auth.onAuthStateChanged(user => {
+    // Check authentication
+    onAuthStateChanged(auth, (user) => {
       if (!user) {
-        window.location.href = "signup.html"; // Redirect to the login page if not logged in
+        window.location.href = "signup.html"; // Redirect if not logged in
+      } else {
+        loadUsers();
       }
     });
 
-    // Logout Function
+    // Load Users
+    async function loadUsers() {
+      const usersRef = collection(db, "users");
+      const snapshot = await getDocs(usersRef);
+      const userList = document.getElementById("user-list");
+      userList.innerHTML = ""; // Clear previous users
+
+      snapshot.forEach(doc => {
+        const user = doc.data();
+        if (user.email !== auth.currentUser.email) { // Don't show current user
+          const userElement = document.createElement("li");
+          userElement.textContent = user.email;
+          userElement.setAttribute("data-id", user.email);
+          userElement.addEventListener("click", () => openChat(user.email));
+          userList.appendChild(userElement);
+        }
+      });
+    }
+
+    // Function to open chat page
+    function openChat(userId) {
+      window.location.href = `chat.html?user=${encodeURIComponent(userId)}`;
+    }
+
+    // Filter users when searching
+    function filterUsers() {
+      const searchValue = document.getElementById("search-user").value.toLowerCase();
+      const users = document.querySelectorAll("#user-list li");
+
+      users.forEach(user => {
+        const userId = user.getAttribute("data-id").toLowerCase();
+        if (userId.includes(searchValue)) {
+          user.style.display = "block";
+        } else {
+          user.style.display = "none";
+        }
+      });
+    }
+
+    // Logout function
     function logout() {
-      signOut(auth)
-        .then(() => {
-          alert("You have been logged out.");
-          window.location.href = "signup.html"; // Redirect to the login page after logging out
-        })
-        .catch((error) => {
-          alert("Logout failed: " + error.message);
-        });
+      signOut(auth).then(() => {
+        alert("You have been logged out.");
+        window.location.href = "signup.html";
+      }).catch((error) => {
+        alert("Logout failed: " + error.message);
+      });
     }
 
-    // Attach the logout function to the logout button
-    if (document.getElementById("logout-button")) {
-      document.getElementById("logout-button").addEventListener("click", logout);
-    }
-
-    // Show the Change Password form
-    document.getElementById("change-password-button").addEventListener("click", function() {
-      document.getElementById("change-password-form").style.display = "block";
-    });
-
-    // Close the modal
-    document.getElementById("close-modal").addEventListener("click", function() {
-      document.getElementById("change-password-form").style.display = "none";
-    });
-
-    // Handle password change
-    document.getElementById("change-password-form-content").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const newPassword = document.getElementById("new-password").value;
-      const user = auth.currentUser;
-
-      if (!newPassword) {
-        document.getElementById("password-message").innerText = "Please enter a new password.";
-        return;
-      }
-
-      updatePassword(user, newPassword)
-        .then(() => {
-          document.getElementById("password-message").innerText = "Password updated successfully!";
-        })
-        .catch((error) => {
-          document.getElementById("password-message").innerText = "Error updating password: " + error.message;
-        });
-    });
+    // Attach logout event
+    document.getElementById("logout-button").addEventListener("click", logout);
   </script>
 
   <script>
-  function controlWidth() {
-    const menu = document.getElementById("menu");
-    const checkBox = document.getElementById("checkbox");
+    function controlWidth() {
+      const menu = document.getElementById("menu");
+      const checkBox = document.getElementById("checkbox");
 
-    if (checkBox.checked) {
-      menu.classList.add("expanded"); // Expand the menu
-    } else {
-      menu.classList.remove("expanded"); // Collapse the menu
+      if (checkBox.checked) {
+        menu.classList.add("expanded"); // Expand the menu
+      } else {
+        menu.classList.remove("expanded"); // Collapse the menu
+      }
     }
-  }
-</script>
+  </script>
 </body>
 </html>

@@ -26,7 +26,7 @@
           <button id="change-password-button">Change Password</button>
           <input type="text" id="search-user" placeholder="Search user by email">
           <button id="search-button">Search</button>
-          <p id="search-result"></p> <!-- Display search result -->
+          <div id="search-result"></div> <!-- Display search result -->
         </div>
       </div>
     </div>
@@ -61,7 +61,7 @@
       getAuth, signOut, updatePassword, onAuthStateChanged, reauthenticateWithCredential, EmailAuthProvider 
     } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getDatabase, ref, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -144,16 +144,18 @@
       }
 
       try {
-        // Convert email to a valid database key (remove special characters)
-        const safeEmail = email.replace(/\./g, "_");
-
-        const userRef = ref(db, `users/${safeEmail}`);
-        const snapshot = await get(userRef);
+        // Query the database to find a user by email
+        const usersRef = ref(db, "users");
+        const q = query(usersRef, orderByChild("email"), equalTo(email));
+        const snapshot = await get(q);
 
         if (snapshot.exists()) {
-          const userId = snapshot.val().uid;
-          document.getElementById("search-result").innerHTML = 
-            `<p>User Found: <button onclick="openChat('${userId}')">${userId}</button></p>`;
+          let resultHTML = "<p>Users Found:</p>";
+          snapshot.forEach(childSnapshot => {
+            const userId = childSnapshot.key;
+            resultHTML += `<button onclick="openChat('${userId}')">${userId}</button><br>`;
+          });
+          document.getElementById("search-result").innerHTML = resultHTML;
         } else {
           document.getElementById("search-result").innerText = "User not found.";
         }
@@ -163,9 +165,9 @@
     });
 
     // **Function to Open Chat with User**
-    function openChat(userId) {
+    window.openChat = function (userId) {
       window.location.href = `chat.html?user=${userId}`; // Redirect to chat page
-    }
+    };
   </script>
 
   <script>

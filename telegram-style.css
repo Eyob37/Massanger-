@@ -8,6 +8,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden;
 }
 
 .app-container {
@@ -19,6 +20,12 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.app-container:hover {
+  transform: scale(1.01);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Sidebar Styles */
@@ -29,17 +36,19 @@ body {
 #menu {
   position: fixed;
   z-index: 1;
-  background: black;
+  background: linear-gradient(135deg, #1e1e1e, #121212);
   padding: 0.5em;
   width: 40px;
-  height: 40px; /* Fixed initial height */
-  transition: width 0.3s ease, height 0.3s ease; /* Smoother transition */
-  overflow: hidden; /* Hide overflow initially */
+  height: 40px;
+  transition: width 0.3s ease, height 0.3s ease;
+  overflow: hidden;
+  border-radius: 10px;
 }
 
 #menu.expanded {
-  width: 250px; /* Expanded width */
-  height: 90%; /* Expanded height */
+  width: 250px;
+  height: 90%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .toggle {
@@ -85,12 +94,12 @@ body {
 /* Sidebar Content */
 .sidebar-content {
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease 0.2s; /* Delay to sync with sidebar expansion */
   padding: 20px;
 }
 
 #menu.expanded .sidebar-content {
-  opacity: 1; /* Show content when expanded */
+  opacity: 1;
 }
 
 .sidebar-header {
@@ -101,12 +110,42 @@ body {
   margin: 0;
   font-size: 24px;
   color: #ffffff;
+  font-weight: 700;
 }
 
 .sidebar-menu {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.sidebar-menu button,
+.sidebar-menu input {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.sidebar-menu button {
+  background-color: #ff153f;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.sidebar-menu button:hover {
+  background-color: #e01438;
+  transform: scale(1.05);
+}
+
+.sidebar-menu input {
+  background-color: #2c2c2c;
+  color: #ffffff;
+}
+
+.sidebar-menu input::placeholder {
+  color: #a0a0a0;
 }
 
 /* Chat Area Styles */
@@ -116,37 +155,45 @@ body {
   flex-direction: column;
   background-color: #f9f9f9;
   text-align: center;
+  transition: background-color 0.3s ease;
 }
 
 .chat-header {
   background-color: #ffffff;
   padding: 20px;
   border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .chat-header h2 {
   margin: 0;
   font-size: 20px;
   color: #333333;
+  font-weight: 600;
 }
 
 .chat-messages {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Modal Styles */
 .modal {
   display: none;
   position: fixed;
-  top: 100px;
-  left: 100px;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
+  animation: fadeIn 0.3s ease;
 }
 
 .modal-content {
@@ -155,11 +202,13 @@ body {
   border-radius: 10px;
   width: 300px;
   text-align: center;
+  animation: slideIn 0.3s ease;
 }
 
 .modal-content h2 {
   margin-bottom: 20px;
   color: #333333;
+  font-weight: 600;
 }
 
 .modal-content input {
@@ -168,20 +217,28 @@ body {
   margin-bottom: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 5px;
+  transition: border-color 0.3s ease;
+}
+
+.modal-content input:focus {
+  border-color: #ff153f;
+  outline: none;
 }
 
 .modal-content button {
-  background-color: #007bff;
+  background-color: #ff153f;
   color: #ffffff;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   margin: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .modal-content button:hover {
-  background-color: #0056b3;
+  background-color: #e01438;
+  transform: scale(1.05);
 }
 
 #password-message {
@@ -189,6 +246,54 @@ body {
   color: #28a745;
   font-size: 14px;
 }
-#user-id{
-  color: white;
+
+#user-id {
+  color: #ffffff;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  #menu {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border-radius: 0;
+  }
+
+  #menu.expanded {
+    height: 250px;
+  }
+
+  .chat-area {
+    height: calc(100vh - 50px);
+  }
 }

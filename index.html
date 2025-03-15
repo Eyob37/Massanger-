@@ -79,6 +79,7 @@
     onAuthStateChanged(auth, (user) => {
       if (user) {
         document.getElementById("user-id").innerText = `User ID: ${user.uid}`;
+        console.log(user.uid);
       } else {
         window.location.href = "signup.html"; // Redirect to login if not authenticated
       }

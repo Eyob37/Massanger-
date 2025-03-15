@@ -286,8 +286,10 @@ body {
     flex-direction: column;
     height: 100vh;
     border-radius: 0;
-    margin-top: 500px;
   }
+ .chat-area{
+    marign-top: 100px;
+ }
 
   #menu {
     position: fixed; 

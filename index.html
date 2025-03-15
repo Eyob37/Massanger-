@@ -24,6 +24,9 @@
         </div>
         <div class="sidebar-menu">
           <button id="change-password-button">Change Password</button>
+          <input type="text" id="search-user" placeholder="Search user by email">
+          <button id="search-button">Search</button>
+          <p id="search-result"></p> <!-- Display search result -->
         </div>
       </div>
     </div>
@@ -58,6 +61,7 @@
       getAuth, signOut, updatePassword, onAuthStateChanged, reauthenticateWithCredential, EmailAuthProvider 
     } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -74,12 +78,12 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getDatabase(app);
 
     // **Show User ID in Sidebar**
     onAuthStateChanged(auth, (user) => {
       if (user) {
         document.getElementById("user-id").innerText = `User ID: ${user.uid}`;
-        console.log(user.uid);
       } else {
         window.location.href = "signup.html"; // Redirect to login if not authenticated
       }
@@ -130,6 +134,38 @@
         document.getElementById("password-message").innerText = "Error updating password: " + error.message;
       }
     });
+
+    // **Search User by Email**
+    document.getElementById("search-button").addEventListener("click", async function() {
+      const email = document.getElementById("search-user").value.trim();
+      if (!email) {
+        document.getElementById("search-result").innerText = "Please enter an email.";
+        return;
+      }
+
+      try {
+        // Convert email to a valid database key (remove special characters)
+        const safeEmail = email.replace(/\./g, "_");
+
+        const userRef = ref(db, `users/${safeEmail}`);
+        const snapshot = await get(userRef);
+
+        if (snapshot.exists()) {
+          const userId = snapshot.val().uid;
+          document.getElementById("search-result").innerHTML = 
+            `<p>User Found: <button onclick="openChat('${userId}')">${userId}</button></p>`;
+        } else {
+          document.getElementById("search-result").innerText = "User not found.";
+        }
+      } catch (error) {
+        document.getElementById("search-result").innerText = "Error searching user: " + error.message;
+      }
+    });
+
+    // **Function to Open Chat with User**
+    function openChat(userId) {
+      window.location.href = `chat.html?user=${userId}`; // Redirect to chat page
+    }
   </script>
 
   <script>

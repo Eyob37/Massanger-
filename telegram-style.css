@@ -287,12 +287,9 @@ body {
     height: 100vh;
     border-radius: 0;
   }
- .chat-area{
-    marign-top: 100px;
- }
 
   #menu {
-    position: fixed; 
+    position: relative; 
     width: 100%;
     height: 50px;
     border-radius: 0;
@@ -301,6 +298,7 @@ body {
   }
 
   #menu.expanded {
+    position: fixed; 
     height: 50%;
   }
 

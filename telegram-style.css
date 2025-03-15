@@ -286,6 +286,8 @@ body {
     flex-direction: column;
     height: 100vh;
     border-radius: 0;
+    display: relative;
+    top: 60px;
   }
 
   #menu {

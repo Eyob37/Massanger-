@@ -293,13 +293,13 @@ body {
     width: 100%;
     height: 50px;
     border-radius: 0;
-    top: 0;
+    top: 10px;
     left: 0;
   }
 
   #menu.expanded {
     position: fixed;
-    height: 250px;
+    height: 50%;
   }
 
   .chat-area {

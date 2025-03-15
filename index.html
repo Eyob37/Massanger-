@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eyob Chat App</title>
-  <link rel="stylesheet" href="telegram-style.css"> 
+  <link rel="stylesheet" href="telegram-style.css"> <!-- Updated stylesheet -->
 </head>
 <body>
   <div class="app-container">
@@ -19,15 +19,11 @@
       <div class="sidebar-content">
         <div class="sidebar-header">
           <h2>Eyob Chat</h2>
+          <p id="user-id">Loading...</p> <!-- Display User ID -->
           <button id="logout-button">Logout</button>
         </div>
         <div class="sidebar-menu">
           <button id="change-password-button">Change Password</button>
-        </div>
-        <div class="user-search">
-          <input type="text" id="search-user" placeholder="Search User ID">
-          <button id="search-button">Search</button>
-          <ul id="search-results"></ul>
         </div>
       </div>
     </div>
@@ -42,12 +38,11 @@
       </div>
     </div>
 
-    <!-- Change Password Form -->
-    <div id="change-password-form" class="modal" style="display: none;">
+    <!-- Change Password Form (Initially Hidden) -->
+    <div id="change-password-form" class="modal">
       <div class="modal-content">
         <h2>Change Your Password</h2>
         <form id="change-password-form-content">
-          <input type="password" id="current-password" placeholder="Enter current password" required>
           <input type="password" id="new-password" placeholder="Enter new password" required>
           <button type="submit">Update Password</button>
         </form>
@@ -58,10 +53,13 @@
   </div>
 
   <script type="module">
-    import { getAuth, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    // Import Firebase modules
+    import { 
+      getAuth, signOut, updatePassword, onAuthStateChanged, reauthenticateWithCredential, EmailAuthProvider 
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAu24f6vmreUJOjTVpH4NQ1zhP5LyTC2s0",
       authDomain: "eyobchat-1769b.firebaseapp.com",
@@ -73,92 +71,64 @@
       measurementId: "G-0XX85HVLKS"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getDatabase(app);
 
-    // Check if user is logged in
-    auth.onAuthStateChanged(user => {
-      if (!user) {
-        window.location.href = "signup.html";
+    // **Show User ID in Sidebar**
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("user-id").innerText = `User ID: ${user.uid}`;
+      } else {
+        window.location.href = "signup.html"; // Redirect to login if not authenticated
       }
     });
 
-    // Logout function
-    function logout() {
+    // **Logout Function**
+    document.getElementById("logout-button").addEventListener("click", () => {
       signOut(auth)
         .then(() => {
-          alert("Logged out successfully.");
+          alert("You have been logged out.");
           window.location.href = "signup.html";
         })
-        .catch(error => {
+        .catch((error) => {
           alert("Logout failed: " + error.message);
         });
-    }
+    });
 
-    document.getElementById("logout-button").addEventListener("click", logout);
-
-    // Show Change Password Form
+    // **Show Change Password Form**
     document.getElementById("change-password-button").addEventListener("click", function() {
       document.getElementById("change-password-form").style.display = "block";
     });
 
-    // Close Change Password Form
+    // **Close Change Password Form**
     document.getElementById("close-modal").addEventListener("click", function() {
       document.getElementById("change-password-form").style.display = "none";
     });
 
-    // Handle Password Change
+    // **Handle Password Change**
     document.getElementById("change-password-form-content").addEventListener("submit", async function(e) {
       e.preventDefault();
-
-      const user = auth.currentUser;
-      const currentPassword = document.getElementById("current-password").value;
       const newPassword = document.getElementById("new-password").value;
-      const passwordMessage = document.getElementById("password-message");
+      const user = auth.currentUser;
 
-      if (!currentPassword || !newPassword) {
-        passwordMessage.innerText = "Please fill out both fields.";
+      if (!newPassword) {
+        document.getElementById("password-message").innerText = "Please enter a new password.";
         return;
       }
 
       try {
-        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        // **Reauthentication Required Before Changing Password**
+        const credential = EmailAuthProvider.credential(user.email, prompt("Enter your current password:"));
         await reauthenticateWithCredential(user, credential);
+
+        // **Update Password**
         await updatePassword(user, newPassword);
-        passwordMessage.innerText = "Password updated successfully!";
+        document.getElementById("password-message").innerText = "Password updated successfully!";
       } catch (error) {
-        passwordMessage.innerText = "Error: " + error.message;
+        document.getElementById("password-message").innerText = "Error updating password: " + error.message;
       }
     });
-
-    // User Search Feature
-    document.getElementById("search-button").addEventListener("click", async function() {
-  const searchInput = document.getElementById("search-user").value.trim();
-  const resultsList = document.getElementById("search-results");
-
-  if (!searchInput) {
-    resultsList.innerHTML = "<li>Please enter a User ID</li>";
-    return;
-  }
-
-  // Convert email to a safe format (replace . with ,)
-  const safeKey = searchInput.replace(/\./g, ',');
-
-  const dbRef = ref(db);
-  get(child(dbRef, `users/${safeKey}`))
-    .then(snapshot => {
-      if (snapshot.exists()) {
-        const userData = snapshot.val();
-        resultsList.innerHTML = `<li><a href="chat.html?user=${safeKey}">${userData.name}</a></li>`;
-      } else {
-        resultsList.innerHTML = "<li>User not found</li>";
-      }
-    })
-    .catch(error => {
-      resultsList.innerHTML = `<li>Error: ${error.message}</li>`;
-    });
-});
   </script>
 
   <script>
@@ -167,9 +137,9 @@
       const checkBox = document.getElementById("checkbox");
 
       if (checkBox.checked) {
-        menu.classList.add("expanded");
+        menu.classList.add("expanded"); // Expand the menu
       } else {
-        menu.classList.remove("expanded");
+        menu.classList.remove("expanded"); // Collapse the menu
       }
     }
   </script>

@@ -32,40 +32,26 @@
       <div class="chat-header">
         <h2>Welcome to Eyob Chat!</h2>
       </div>
-      
-      <!-- Search User by ID (Email) -->
+
+      <!-- Search User by Email -->
       <div class="search-container">
         <input type="text" id="search-email" placeholder="Search by user email..." />
         <button id="search-button">Search</button>
         <div id="search-results"></div>
       </div>
 
-      <div class="chat-messages">
-        <p>You are now logged in.</p>
-      </div>
-    </div>
-
-    <!-- Change Password Form (Initially Hidden) -->
-    <div id="change-password-form" class="modal">
-      <div class="modal-content">
-        <h2>Change Your Password</h2>
-        <form id="change-password-form-content">
-          <input type="password" id="new-password" placeholder="Enter new password" required>
-          <button type="submit">Update Password</button>
-        </form>
-        <p id="password-message"></p>
-        <button id="close-modal">Close</button>
+      <!-- Messages List -->
+      <div class="chat-messages" id="messages-list">
+        <p>Loading messages...</p>
       </div>
     </div>
   </div>
 
   <script type="module">
-    // Import Firebase modules
-    import { getAuth, signOut, updatePassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAu24f6vmreUJOjTVpH4NQ1zhP5LyTC2s0",
       authDomain: "eyobchat-1769b.firebaseapp.com",
@@ -77,114 +63,77 @@
       measurementId: "G-0XX85HVLKS"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Check if user is logged in
+    let currentUserEmail = "";
+
     onAuthStateChanged(auth, user => {
       if (!user) {
-        window.location.href = "signup.html"; // Redirect to the login page if not logged in
+        window.location.href = "signup.html";
+      } else {
+        currentUserEmail = user.email;
+        loadMessages();
       }
     });
 
-    // Logout Function
-    function logout() {
-      signOut(auth)
-        .then(() => {
-          alert("You have been logged out.");
-          window.location.href = "signup.html"; // Redirect to the login page after logging out
-        })
-        .catch((error) => {
-          alert("Logout failed: " + error.message);
-        });
-    }
+    function loadMessages() {
+      const messagesRef = ref(db, "messages");
+      onValue(messagesRef, snapshot => {
+        const messagesList = document.getElementById("messages-list");
+        messagesList.innerHTML = "";
+        
+        if (!snapshot.exists()) {
+          messagesList.innerHTML = "<p>No messages yet.</p>";
+          return;
+        }
 
-    // Attach the logout function to the logout button
-    if (document.getElementById("logout-button")) {
-      document.getElementById("logout-button").addEventListener("click", logout);
-    }
+        const messages = snapshot.val();
+        const users = {};
 
-    // Show the Change Password form
-    document.getElementById("change-password-button").addEventListener("click", function() {
-      document.getElementById("change-password-form").style.display = "block";
-    });
-
-    // Close the modal
-    document.getElementById("close-modal").addEventListener("click", function() {
-      document.getElementById("change-password-form").style.display = "none";
-    });
-
-    // Handle password change
-    document.getElementById("change-password-form-content").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const newPassword = document.getElementById("new-password").value;
-      const user = auth.currentUser;
-
-      if (!newPassword) {
-        document.getElementById("password-message").innerText = "Please enter a new password.";
-        return;
-      }
-
-      updatePassword(user, newPassword)
-        .then(() => {
-          document.getElementById("password-message").innerText = "Password updated successfully!";
-        })
-        .catch((error) => {
-          document.getElementById("password-message").innerText = "Error updating password: " + error.message;
-        });
-    });
-
-    // Search for user by email
-    document.getElementById("search-button").addEventListener("click", function() {
-      const email = document.getElementById("search-email").value;
-      if (!email) {
-        document.getElementById("search-results").innerHTML = "<p>Please enter an email to search.</p>";
-        return;
-      }
-
-      const usersRef = ref(db, "users");
-      const usersQuery = query(usersRef, orderByChild("email"), equalTo(email));
-
-      get(usersQuery)
-        .then(snapshot => {
-          if (snapshot.exists()) {
-            const users = snapshot.val();
-            const userId = Object.keys(users)[0]; // Assume unique email, get first matching user
-            const user = users[userId];
-            const userDiv = document.createElement("div");
-            userDiv.textContent = `Found user: ${user.email}`;
-            userDiv.style.cursor = "pointer";
-            userDiv.addEventListener("click", () => {
-              // Redirect to another page with user details (you can add user-specific functionality here)
-              window.location.href = `user-detail.html?userId=${userId}`;
-            });
-            document.getElementById("search-results").innerHTML = ''; // Clear previous results
-            document.getElementById("search-results").appendChild(userDiv);
-          } else {
-            document.getElementById("search-results").innerHTML = "<p>No user found with this email.</p>";
+        for (const key in messages) {
+          const msg = messages[key];
+          if (msg.receiver === currentUserEmail) {
+            users[msg.sender] = msg.sender;
           }
-        })
-        .catch(error => {
-          console.error("Error searching user: ", error);
-          document.getElementById("search-results").innerHTML = "<p>Error searching user.</p>";
+        }
+
+        Object.keys(users).forEach(sender => {
+          const senderDiv = document.createElement("div");
+          senderDiv.textContent = sender;
+          senderDiv.className = "sender-name";
+          senderDiv.style.cursor = "pointer";
+          senderDiv.addEventListener("click", () => {
+            window.location.href = `user-detail.html?email=${sender}`;
+          });
+          messagesList.appendChild(senderDiv);
         });
+
+        if (Object.keys(users).length === 0) {
+          messagesList.innerHTML = "<p>No messages found.</p>";
+        }
+      });
+    }
+
+    document.getElementById("logout-button").addEventListener("click", function() {
+      signOut(auth).then(() => {
+        alert("You have been logged out.");
+        window.location.href = "signup.html";
+      }).catch(error => {
+        alert("Logout failed: " + error.message);
+      });
     });
 
-  </script>
-
-  <script>
-  function controlWidth() {
-    const menu = document.getElementById("menu");
-    const checkBox = document.getElementById("checkbox");
-
-    if (checkBox.checked) {
-      menu.classList.add("expanded"); // Expand the menu
-    } else {
-      menu.classList.remove("expanded"); // Collapse the menu
+    function controlWidth() {
+      const menu = document.getElementById("menu");
+      const checkBox = document.getElementById("checkbox");
+      if (checkBox.checked) {
+        menu.classList.add("expanded");
+      } else {
+        menu.classList.remove("expanded");
+      }
     }
-  }
-</script>
+  </script>
 </body>
 </html>

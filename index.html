@@ -124,16 +124,18 @@
         alert("Logout failed: " + error.message);
       });
     });
-
-    function controlWidth() {
-      const menu = document.getElementById("menu");
-      const checkBox = document.getElementById("checkbox");
-      if (checkBox.checked) {
-        menu.classList.add("expanded");
-      } else {
-        menu.classList.remove("expanded");
-      }
+    </script>
+   <script>
+  function controlWidth() {
+    const menu = document.getElementById("menu");
+    const checkBox = document.getElementById("checkbox");
+    
+    if (checkBox.checked) {
+      menu.classList.add("expanded");
+    } else {
+      menu.classList.remove("expanded");
     }
-  </script>
+  }
+</script>  
 </body>
 </html>

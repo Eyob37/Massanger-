@@ -298,6 +298,7 @@ body {
   }
 
   #menu.expanded {
+    position: fixed;
     height: 250px;
   }
 

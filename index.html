@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eyob Chat App</title>
-  <link rel="stylesheet" href="telegram-style.css"> <!-- Updated stylesheet -->
+  <link rel="stylesheet" href="telegram-style.css"> 
 </head>
 <body>
   <div class="app-container">
@@ -24,6 +24,11 @@
         <div class="sidebar-menu">
           <button id="change-password-button">Change Password</button>
         </div>
+        <div class="user-search">
+          <input type="text" id="search-user" placeholder="Search User ID">
+          <button id="search-button">Search</button>
+          <ul id="search-results"></ul>
+        </div>
       </div>
     </div>
 
@@ -37,7 +42,7 @@
       </div>
     </div>
 
-    <!-- Change Password Form (Initially Hidden) -->
+    <!-- Change Password Form -->
     <div id="change-password-form" class="modal" style="display: none;">
       <div class="modal-content">
         <h2>Change Your Password</h2>
@@ -53,11 +58,10 @@
   </div>
 
   <script type="module">
-    // Import Firebase modules
     import { getAuth, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAu24f6vmreUJOjTVpH4NQ1zhP5LyTC2s0",
       authDomain: "eyobchat-1769b.firebaseapp.com",
@@ -69,30 +73,29 @@
       measurementId: "G-0XX85HVLKS"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getDatabase(app);
 
     // Check if user is logged in
     auth.onAuthStateChanged(user => {
       if (!user) {
-        window.location.href = "signup.html"; // Redirect to signup if not logged in
+        window.location.href = "signup.html";
       }
     });
 
-    // Logout Function
+    // Logout function
     function logout() {
       signOut(auth)
         .then(() => {
-          alert("You have been logged out.");
-          window.location.href = "signup.html"; // Redirect after logout
+          alert("Logged out successfully.");
+          window.location.href = "signup.html";
         })
         .catch(error => {
           alert("Logout failed: " + error.message);
         });
     }
 
-    // Attach logout function to button
     document.getElementById("logout-button").addEventListener("click", logout);
 
     // Show Change Password Form
@@ -120,16 +123,38 @@
       }
 
       try {
-        // Step 1: Re-authenticate user
         const credential = EmailAuthProvider.credential(user.email, currentPassword);
         await reauthenticateWithCredential(user, credential);
-
-        // Step 2: Update password
         await updatePassword(user, newPassword);
         passwordMessage.innerText = "Password updated successfully!";
       } catch (error) {
         passwordMessage.innerText = "Error: " + error.message;
       }
+    });
+
+    // User Search Feature
+    document.getElementById("search-button").addEventListener("click", async function() {
+      const searchInput = document.getElementById("search-user").value.trim();
+      const resultsList = document.getElementById("search-results");
+
+      if (!searchInput) {
+        resultsList.innerHTML = "<li>Please enter a User ID</li>";
+        return;
+      }
+
+      const dbRef = ref(db);
+      get(child(dbRef, `users/${searchInput}`))
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            resultsList.innerHTML = `<li><a href="chat.html?user=${searchInput}">${userData.name}</a></li>`;
+          } else {
+            resultsList.innerHTML = "<li>User not found</li>";
+          }
+        })
+        .catch(error => {
+          resultsList.innerHTML = `<li>Error: ${error.message}</li>`;
+        });
     });
   </script>
 
@@ -139,9 +164,9 @@
       const checkBox = document.getElementById("checkbox");
 
       if (checkBox.checked) {
-        menu.classList.add("expanded"); // Expand the menu
+        menu.classList.add("expanded");
       } else {
-        menu.classList.remove("expanded"); // Collapse the menu
+        menu.classList.remove("expanded");
       }
     }
   </script>

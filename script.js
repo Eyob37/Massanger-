@@ -76,6 +76,21 @@ function signUp() {
       // Save verification code in localStorage
       localStorage.setItem("verificationCode", verificationCode);
 
+      // Save user details to the database
+      const userRef = ref(db, `users/${user.uid}`);
+      set(userRef, {
+        email: email,
+        name: name,
+        verified: false,
+        status: "offline" // Add the status field here
+      })
+        .then(() => {
+          console.log("User details saved to the database.");
+        })
+        .catch((error) => {
+          console.error("Error saving user details: ", error);
+        });
+
       // Send verification email using EmailJS
       sendEmail(name, email, verificationCode);
     })
@@ -101,7 +116,17 @@ function login() {
       const user = userCredential.user;
       loginMessage.innerText = "Login successful! Redirecting...";
 
-      // Redirect to the main app page (you can create this later)
+      // Update user status to "online"
+      const userStatusRef = ref(db, `users/${user.uid}/status`);
+      set(userStatusRef, "online")
+        .then(() => {
+          console.log("User status updated to online.");
+        })
+        .catch((error) => {
+          console.error("Error updating user status: ", error);
+        });
+
+      // Redirect to the main app page
       setTimeout(() => {
         window.location.href = "index.html";
       }, 2000);
@@ -110,7 +135,6 @@ function login() {
       loginMessage.innerText = "Login failed: " + error.message;
     });
 }
-
 // Attach the signUp function to the signup button
 if (document.getElementById("signup-button")) {
   document.getElementById("signup-button").addEventListener("click", signUp);

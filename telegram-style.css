@@ -258,7 +258,22 @@ body {
   font-size: 14px;
   margin-top: 5px;
 }
+#search-results div {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
 
+#search-results div:hover {
+  background-color: #f0f0f0;
+}
+
+.online {
+  color: green;
+}
+
+.offline {
+  color: gray;
+}
 /* Animations */
 @keyframes fadeIn {
   from {

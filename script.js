@@ -122,6 +122,3 @@ if (document.getElementById("login-button")) {
   document.getElementById("login-button").addEventListener("click", login);
 }
 
-
-
-where I put the code?

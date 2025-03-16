@@ -150,43 +150,40 @@
     });
 
     // Search for online users
-    document.getElementById("search-button").addEventListener("click", function() {
-      const email = document.getElementById("search-email").value;
-      if (!email) {
-        document.getElementById("search-results").innerHTML = "<p>Please enter an email to search.</p>";
-        return;
-      }
+    // Search for users (both online and offline)
+document.getElementById("search-button").addEventListener("click", function() {
+  const email = document.getElementById("search-email").value;
+  if (!email) {
+    document.getElementById("search-results").innerHTML = "<p>Please enter an email to search.</p>";
+    return;
+  }
 
-      const usersRef = ref(db, "users");
-      const usersQuery = query(usersRef, orderByChild("email"), equalTo(email));
+  const usersRef = ref(db, "users");
+  const usersQuery = query(usersRef, orderByChild("email"), equalTo(email));
 
-      get(usersQuery).then(snapshot => {
-        if (snapshot.exists()) {
-          const users = snapshot.val();
-          const userId = Object.keys(users)[0];
-          const user = users[userId];
+  get(usersQuery).then(snapshot => {
+    if (snapshot.exists()) {
+      const users = snapshot.val();
+      const userId = Object.keys(users)[0];
+      const user = users[userId];
 
-          if (user.status === "online") {
-            const userDiv = document.createElement("div");
-            userDiv.textContent = `Online: ${user.email}`;
-            userDiv.style.cursor = "pointer";
-            userDiv.addEventListener("click", () => {
-              window.location.href = `user-detail.html?userId=${userId}`;
-            });
-            document.getElementById("search-results").innerHTML = '';
-            document.getElementById("search-results").appendChild(userDiv);
-          } else {
-            document.getElementById("search-results").innerHTML = "<p>User is offline.</p>";
-          }
-        } else {
-          document.getElementById("search-results").innerHTML = "<p>No user found with this email.</p>";
-        }
-      }).catch(error => {
-        console.error("Error searching user: ", error);
-        document.getElementById("search-results").innerHTML = "<p>Error searching user.</p>";
+      // Display user regardless of status (online or offline)
+      const userDiv = document.createElement("div");
+      userDiv.textContent = `${user.status === "online" ? "Online" : "Offline"}: ${user.email}`;
+      userDiv.style.cursor = "pointer";
+      userDiv.addEventListener("click", () => {
+        window.location.href = `user-detail.html?userId=${userId}`;
       });
-    });
-
+      document.getElementById("search-results").innerHTML = '';
+      document.getElementById("search-results").appendChild(userDiv);
+    } else {
+      document.getElementById("search-results").innerHTML = "<p>No user found with this email.</p>";
+    }
+  }).catch(error => {
+    console.error("Error searching user: ", error);
+    document.getElementById("search-results").innerHTML = "<p>Error searching user.</p>";
+  });
+});
   </script>
 
   <script>

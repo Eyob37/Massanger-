@@ -35,7 +35,7 @@
       
       <!-- Search User by ID (Email) -->
       <div class="search-container">
-        <input type="text" id="search-email" placeholder="Search by user email..." />
+        <input type="text" id="search-email" placeholder="Search online users by email..." />
         <button id="search-button">Search</button>
         <div id="search-results"></div>
       </div>
@@ -45,7 +45,7 @@
       </div>
     </div>
 
-    <!-- Change Password Form (Updated) -->
+    <!-- Change Password Form -->
     <div id="change-password-form" class="modal">
       <div class="modal-content">
         <h2>Change Your Password</h2>
@@ -61,7 +61,6 @@
   </div>
 
   <script type="module">
-    // Firebase integration
     import {
       getAuth,
       signOut,
@@ -73,7 +72,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getDatabase, ref, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-   const firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyAu24f6vmreUJOjTVpH4NQ1zhP5LyTC2s0",
       authDomain: "eyobchat-1769b.firebaseapp.com",
       databaseURL: "https://eyobchat-1769b-default-rtdb.firebaseio.com",
@@ -91,6 +90,22 @@
     onAuthStateChanged(auth, user => {
       if (!user) {
         window.location.href = "signup.html"; 
+      } else {
+        const userRef = ref(db, "users/" + user.uid);
+        get(userRef).then(snapshot => {
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            document.getElementById("chat-header").innerText = `Welcome, ${userData.email}!`;
+          }
+        });
+
+        // Update online status
+        const userStatusRef = ref(db, `users/${user.uid}/status`);
+        userStatusRef.set("online");
+
+        window.addEventListener("beforeunload", () => {
+          userStatusRef.set("offline");
+        });
       }
     });
 
@@ -125,11 +140,8 @@
       }
 
       try {
-        // Re-authenticate the user
         const credential = EmailAuthProvider.credential(user.email, currentPassword);
         await reauthenticateWithCredential(user, credential);
-
-        // Update the password
         await updatePassword(user, newPassword);
         document.getElementById("password-message").innerText = "Password updated successfully!";
       } catch (error) {
@@ -137,6 +149,7 @@
       }
     });
 
+    // Search for online users
     document.getElementById("search-button").addEventListener("click", function() {
       const email = document.getElementById("search-email").value;
       if (!email) {
@@ -152,14 +165,19 @@
           const users = snapshot.val();
           const userId = Object.keys(users)[0];
           const user = users[userId];
-          const userDiv = document.createElement("div");
-          userDiv.textContent = `Found user: ${user.email}`;
-          userDiv.style.cursor = "pointer";
-          userDiv.addEventListener("click", () => {
-            window.location.href = `user-detail.html?userId=${userId}`;
-          });
-          document.getElementById("search-results").innerHTML = '';
-          document.getElementById("search-results").appendChild(userDiv);
+
+          if (user.status === "online") {
+            const userDiv = document.createElement("div");
+            userDiv.textContent = `Online: ${user.email}`;
+            userDiv.style.cursor = "pointer";
+            userDiv.addEventListener("click", () => {
+              window.location.href = `user-detail.html?userId=${userId}`;
+            });
+            document.getElementById("search-results").innerHTML = '';
+            document.getElementById("search-results").appendChild(userDiv);
+          } else {
+            document.getElementById("search-results").innerHTML = "<p>User is offline.</p>";
+          }
         } else {
           document.getElementById("search-results").innerHTML = "<p>No user found with this email.</p>";
         }

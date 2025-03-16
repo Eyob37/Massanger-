@@ -151,7 +151,8 @@
 
     // Search for online users
     // Search for users (both online and offline)
-document.getElementById("search-button").addEventListener("click", function() {
+// Search for users (both online and offline)
+document.getElementById("search-button").addEventListener("click", function () {
   const email = document.getElementById("search-email").value;
   if (!email) {
     document.getElementById("search-results").innerHTML = "<p>Please enter an email to search.</p>";
@@ -161,25 +162,35 @@ document.getElementById("search-button").addEventListener("click", function() {
   const usersRef = ref(db, "users");
   const usersQuery = query(usersRef, orderByChild("email"), equalTo(email));
 
-  get(usersQuery).then(snapshot => {
+  get(usersQuery).then((snapshot) => {
+    const searchResults = document.getElementById("search-results");
+    searchResults.innerHTML = ""; // Clear previous results
+
     if (snapshot.exists()) {
       const users = snapshot.val();
-      const userId = Object.keys(users)[0];
-      const user = users[userId];
 
-      // Display user regardless of status (online or offline)
-      const userDiv = document.createElement("div");
-      userDiv.textContent = `${user.status === "online" ? "Online" : "Offline"}: ${user.email}`;
-      userDiv.style.cursor = "pointer";
-      userDiv.addEventListener("click", () => {
-        window.location.href = `user-detail.html?userId=${userId}`;
+      // Iterate through all users that match the search query
+      Object.keys(users).forEach((userId) => {
+        const user = users[userId];
+
+        // Create a div for each user
+        const userDiv = document.createElement("div");
+        userDiv.textContent = `${user.status === "online" ? "Online" : "Offline"}: ${user.email}`;
+        userDiv.style.cursor = "pointer";
+        userDiv.classList.add(user.status === "online" ? "online" : "offline");
+
+        // Redirect to user details page on click
+        userDiv.addEventListener("click", () => {
+          window.location.href = `user-detail.html?userId=${userId}`;
+        });
+
+        // Append the user div to the search results
+        searchResults.appendChild(userDiv);
       });
-      document.getElementById("search-results").innerHTML = '';
-      document.getElementById("search-results").appendChild(userDiv);
     } else {
-      document.getElementById("search-results").innerHTML = "<p>No user found with this email.</p>";
+      searchResults.innerHTML = "<p>No users found with this email.</p>";
     }
-  }).catch(error => {
+  }).catch((error) => {
     console.error("Error searching user: ", error);
     document.getElementById("search-results").innerHTML = "<p>Error searching user.</p>";
   });

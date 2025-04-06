@@ -71,7 +71,7 @@ if (!userId || !currentUserId) {
       const message = {
         sender: currentUserId,
         receiver: userId,
-        text,
+        message: text,
         timestamp: Date.now()
       };
       push(chatRef, message);

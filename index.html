@@ -110,7 +110,7 @@ onAuthStateChanged(auth, (user) => {
     get(userRef).then((snapshot) => {
       if (snapshot.exists()) {
         const userData = snapshot.val();
-        document.getElementById("chat-header").innerText = `Welcome, ${userData.email}!`;
+        document.querySelector(".chat-header").innerText = `Welcome, ${userData.email}!`;
       }
     });
 

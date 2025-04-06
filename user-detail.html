@@ -1,142 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eyob Chat App</title>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
-        .chat-container {
-            width: 300px;
-            background: white;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-        }
-        .chat-box {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-height: 200px;
-            max-height: 300px;
-            overflow-y: auto;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background: #fff;
-        }
-        .message {
-            padding: 10px;
-            border-radius: 10px;
-            max-width: 70%;
-        }
-        .sent { align-self: flex-end; background-color: #0084ff; color: white; }
-        .received { align-self: flex-start; background-color: #ddd; }
-        .input-container { display: flex; margin-top: 10px; }
-        .input-container input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .input-container button {
-            padding: 10px;
-            background: #0084ff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-left: 5px;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Chat with User</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    #user-info {
+      margin-bottom: 20px;
+    }
+
+    #chat-box {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+      margin-bottom: 10px;
+      background: #f9f9f9;
+    }
+
+    .message {
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 10px;
+      max-width: 70%;
+      word-wrap: break-word;
+    }
+
+    .sent {
+      background-color: #dcf8c6;
+      align-self: flex-end;
+      text-align: right;
+    }
+
+    .received {
+      background-color: #fff;
+      align-self: flex-start;
+    }
+
+    #message-input {
+      width: 75%;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    #send-button {
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    #chat-controls {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="chat-container">
-        <input type="email" id="recipientEmail" placeholder="Enter recipient email">
-        <div class="chat-box" id="chatBox"></div>
-        <div class="input-container">
-            <input type="text" id="messageInput" placeholder="Type a message...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
-    </div>
+  <div id="user-info">Loading...</div>
 
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+  <div id="chat-box"></div>
 
-        // Get current user
-        let currentUser = null;
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                loadMessages();
-            } else {
-                alert("Please log in.");
-                window.location.href = "login.html";
-            }
-        });
+  <div id="chat-controls">
+    <input type="text" id="message-input" placeholder="Write a message..." />
+    <button id="send-button">Send</button>
+  </div>
 
-        function sendMessage() {
-            const recipientEmail = document.getElementById("recipientEmail").value.trim();
-            const messageInput = document.getElementById("messageInput");
-            const messageText = messageInput.value.trim();
-            if (!recipientEmail || !messageText) return;
-
-            db.collection("messages").add({
-                sender: currentUser.email,
-                recipient: recipientEmail,
-                message: messageText,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            displayMessage(messageText, "sent");
-            messageInput.value = "";
-        }
-
-        function loadMessages() {
-            db.collection("messages")
-                .where("recipient", "==", currentUser.email)
-                .orderBy("timestamp")
-                .onSnapshot(snapshot => {
-                    document.getElementById("chatBox").innerHTML = "";
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        const isSent = data.sender === currentUser.email;
-                        displayMessage(data.message, isSent ? "sent" : "received");
-                    });
-                });
-        }
-
-        function displayMessage(message, type) {
-            const chatBox = document.getElementById("chatBox");
-            const msgDiv = document.createElement("div");
-            msgDiv.className = "message " + type;
-            msgDiv.textContent = message;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    </script>
+  <!-- Firebase + Script -->
+  <script type="module" src="firebase-init.js"></script>
+  <script type="module" src="user-detail.js"></script>
 </body>
 </html>

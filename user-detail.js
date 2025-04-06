@@ -1,89 +1,50 @@
-import { ref, get, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-import { auth } from "./firebase-init.js";
-import { db } from "./firebase-init.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  get
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-// Get userId from URL
-const params = new URLSearchParams(window.location.search);
-const userId = params.get("userId");
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyAu24f6vmreUJOjTVpH4NQ1zhP5LyTC2s0",
+  authDomain: "eyobchat-1769b.firebaseapp.com",
+  databaseURL: "https://eyobchat-1769b-default-rtdb.firebaseio.com",
+  projectId: "eyobchat-1769b",
+  storageBucket: "eyobchat-1769b.appspot.com",
+  messagingSenderId: "175396149369",
+  appId: "1:175396149369:web:b310d2fb7132cacad11ca8",
+  measurementId: "G-0XX85HVLKS"
+};
 
-const userInfo = document.getElementById("user-info");
-const chatBox = document.getElementById("chat-box");
-const messageInput = document.getElementById("message-input");
-const sendButton = document.getElementById("send-button");
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-let currentUser = null;
-let receiver = null;
+// Get userId from the URL
+const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get("userId");
 
-// Get current user
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    currentUser = user;
-
-    // Get receiver info
-    const userRef = ref(db, "users/" + userId);
-    get(userRef).then((snapshot) => {
+if (!userId) {
+  document.body.innerHTML = "<p>User ID not found in URL!</p>";
+} else {
+  const userRef = ref(db, "users/" + userId);
+  get(userRef)
+    .then((snapshot) => {
       if (snapshot.exists()) {
-        receiver = snapshot.val();
-
-        userInfo.innerHTML = `
-          <h2>Chat with ${receiver.name}</h2>
-          <p>Email: ${receiver.email}</p>
-          <p>Status: ${receiver.status === "online" ? "Online" : "Offline"}</p>
-        `;
-
-        // Start loading messages
-        loadMessages();
+        const user = snapshot.val();
+        document.getElementById("user-name").textContent = user.name;
+        document.getElementById("user-email").textContent = user.email;
+        document.getElementById("user-status").textContent =
+          user.status === "online" ? "Online" : "Offline";
+      } else {
+        document.body.innerHTML = "<p>User not found.</p>";
       }
+    })
+    .catch((error) => {
+      console.error("Error loading user details:", error);
+      document.body.innerHTML = "<p>Error loading user details.</p>";
     });
-  } else {
-    userInfo.innerHTML = "<p>You must be logged in to chat.</p>";
-  }
-});
-
-function loadMessages() {
-  const chatRef = ref(db, `messages/${currentUser.uid}_${userId}`);
-
-  onChildAdded(chatRef, (snapshot) => {
-    const msg = snapshot.val();
-    const msgDiv = document.createElement("div");
-    msgDiv.classList.add("message");
-
-    if (msg.sender === currentUser.uid) {
-      msgDiv.classList.add("sent");
-    } else {
-      msgDiv.classList.add("received");
-    }
-
-    msgDiv.textContent = msg.text;
-    chatBox.appendChild(msgDiv);
-
-    // Auto scroll to bottom
-    chatBox.scrollTop = chatBox.scrollHeight;
-  });
-}
-
-sendButton.addEventListener("click", sendMessage);
-messageInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") sendMessage();
-});
-
-function sendMessage() {
-  const text = messageInput.value.trim();
-  if (text === "") return;
-
-  const message = {
-    sender: currentUser.uid,
-    receiver: userId,
-    text,
-    timestamp: Date.now()
-  };
-
-  // Save to both sender-receiver and receiver-sender paths
-  const path1 = `messages/${currentUser.uid}_${userId}`;
-  const path2 = `messages/${userId}_${currentUser.uid}`;
-
-  push(ref(db, path1), message);
-  push(ref(db, path2), message);
-
-  messageInput.value = "";
 }

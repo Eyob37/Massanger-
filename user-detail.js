@@ -32,7 +32,8 @@ const params = new URLSearchParams(window.location.search);
 const userId = params.get("userId");
 
 // Assume current user ID is stored locally (from login)
-const currentUserId = localStorage.getItem("uid");
+const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+const currentUserId = userInfo?.id;
 
 const userInfoDiv = document.getElementById("user-info");
 const chatBox = document.getElementById("chat-box");

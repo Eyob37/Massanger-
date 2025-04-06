@@ -10,7 +10,7 @@ const userInfo = document.getElementById("user-info");
 const chatBox = document.getElementById("chat-box");
 const messageInput = document.getElementById("message-input");
 const sendButton = document.getElementById("send-button");
-alert("hii all");
+
 let currentUser = null;
 let receiver = null;
 

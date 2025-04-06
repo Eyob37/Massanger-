@@ -93,6 +93,7 @@ function signUp() {
 }
 
 // Login Function
+
 function login() {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
@@ -110,7 +111,7 @@ function login() {
       loginMessage.innerText = "Login successful! Redirecting...";
 
       // Get user info from database
-      const userRef = ref(database, "users/" + user.uid);
+      const userRef = ref(db, "users/" + user.uid); // FIXED: use db instead of database
       get(userRef).then(snapshot => {
         if (snapshot.exists()) {
           const userData = snapshot.val();

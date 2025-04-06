@@ -109,11 +109,27 @@ function login() {
       const user = userCredential.user;
       loginMessage.innerText = "Login successful! Redirecting...";
 
-      // Redirect to the main app page (you can create this later)
-      setTimeout(() => {
-        localStorage.setItem("userEmail", email);
-        window.location.href = "index.html";
-      }, 2000);
+      // Get user info from database
+      const userRef = ref(database, "users/" + user.uid);
+      get(userRef).then(snapshot => {
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+
+          // Save user info to localStorage
+          localStorage.setItem("userInfo", JSON.stringify({
+            name: userData.name,
+            id: user.uid,
+            email: user.email
+          }));
+
+          // Redirect to the main app page
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 2000);
+        } else {
+          loginMessage.innerText = "User data not found.";
+        }
+      });
     })
     .catch((error) => {
       loginMessage.innerText = "Login failed: " + error.message;

@@ -174,20 +174,17 @@ document.getElementById("search-button").addEventListener("click", function () {
       Object.keys(users).forEach((userId) => {
         const user = users[userId];
 
-        // Create a div for each user
         const userDiv = document.createElement("div");
-        userDiv.textContent = `${user.status === "online" ? "Online" : "Offline"}: ${user.email}`;
+        userDiv.textContent = `${user.status === "online" ? "Online" : "Offline"}: ${user.name}`; // Changed here
         userDiv.style.cursor = "pointer";
         userDiv.classList.add(user.status === "online" ? "online" : "offline");
 
-        // Redirect to user details page on click
         userDiv.addEventListener("click", () => {
           window.location.href = `user-detail.html?userId=${userId}`;
         });
 
-        // Append the user div to the search results
         searchResults.appendChild(userDiv);
-      });
+     });
     } else {
       searchResults.innerHTML = "<p>No users found with this email.</p>";
     }

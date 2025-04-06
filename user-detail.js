@@ -26,6 +26,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+alert("hello all");
 // Get userId from URL
 const params = new URLSearchParams(window.location.search);
 const userId = params.get("userId");

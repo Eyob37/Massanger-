@@ -112,6 +112,7 @@
     document.getElementById("logout-button").addEventListener("click", function() {
       signOut(auth).then(() => {
         alert("Logged out.");
+        localStorage.setItem("userEmail", null);
         window.location.href = "signup.html";
       }).catch(error => {
         alert("Logout failed: " + error.message);

@@ -76,13 +76,20 @@ function signUp() {
 
       // Save verification code in localStorage
       localStorage.setItem("verificationCode", verificationCode);
-
+      // Inside the .then block after user creation
+      set(ref(db, "users/" + user.uid), {
+        name: name,
+        email: email,
+        verified: false
+      });
       // Send verification email using EmailJS
       sendEmail(name, email, verificationCode);
+      
     })
     .catch((error) => {
       message.innerText = "Error: " + error.message;
     });
+    
 }
 
 // Login Function
@@ -104,6 +111,7 @@ function login() {
 
       // Redirect to the main app page (you can create this later)
       setTimeout(() => {
+        localStorage.setItem("userEmail", email);
         window.location.href = "index.html";
       }, 2000);
     })

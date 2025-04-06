@@ -77,7 +77,7 @@ function signUp() {
       // Save verification code in localStorage
       localStorage.setItem("verificationCode", verificationCode);
       // Inside the .then block after user creation
-      set(ref(db, "users/" + user.uid), {
+      set(ref(db, "EyobChat/users/" + user.uid), {
         name: name,
         email: email,
         verified: false
@@ -111,7 +111,7 @@ function login() {
       loginMessage.innerText = "Login successful! Redirecting...";
 
       // Get user info from database
-      const userRef = ref(db, "users/" + user.uid); // FIXED: use db instead of database
+      const userRef = ref(db, "EyobChat/users/" + user.uid); // FIXED: use db instead of database
       get(userRef).then(snapshot => {
         if (snapshot.exists()) {
           const userData = snapshot.val();

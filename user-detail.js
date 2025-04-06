@@ -44,7 +44,7 @@ if (!userId || !currentUserId) {
   userInfoDiv.textContent = "Invalid user data.";
 } else {
   // Display user info
-  const userRef = ref(db, "users/" + userId);
+  const userRef = ref(db, "EyobChat/users/" + userId);
   get(userRef).then(snapshot => {
     if (snapshot.exists()) {
       const user = snapshot.val();

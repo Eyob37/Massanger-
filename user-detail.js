@@ -34,7 +34,6 @@ const userId = params.get("userId");
 // Assume current user ID is stored locally (from login)
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const currentUserId = userInfo?.id;
-console.log(currentUserId);
 
 const userInfoDiv = document.getElementById("user-info");
 const chatBox = document.getElementById("chat-box");
@@ -57,7 +56,7 @@ if (!userId || !currentUserId) {
 
   // Generate unique chat room ID based on user IDs (sorted)
   const chatId = [currentUserId, userId].sort().join("_");
-  const chatRef = ref(db, `chats/${chatId}`);
+  const chatRef = ref(db, `EyobChat/chats/${chatId}`);
 
   // Listen for new messages
   onChildAdded(chatRef, (snapshot) => {

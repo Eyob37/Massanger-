@@ -34,6 +34,7 @@ const userId = params.get("userId");
 // Assume current user ID is stored locally (from login)
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const currentUserId = userInfo?.id;
+console.log(currentUserId);
 
 const userInfoDiv = document.getElementById("user-info");
 const chatBox = document.getElementById("chat-box");

@@ -1,13 +1,15 @@
+
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+
 import {
   getDatabase,
   ref,
   get,
   push,
-  onChildAdded,
-  serverTimestamp
+  set,
+  onChildAdded
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 // Firebase config
@@ -25,7 +27,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-
 
 // Get userId from URL
 const params = new URLSearchParams(window.location.search);
@@ -54,12 +55,13 @@ if (!userId || !currentUserId) {
     }
   });
 
-  // Generate unique chat room ID based on user IDs (sorted)
+  // Generate unique chat room ID
   const chatId = [currentUserId, userId].sort().join("_");
-  const chatRef = ref(db, `EyobChat/chats/${chatId}`);
+  const messagesRef = ref(db, `EyobChat/chats/${chatId}/messages`);
+  const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);
 
   // Listen for new messages
-  onChildAdded(chatRef, (snapshot) => {
+  onChildAdded(messagesRef, (snapshot) => {
     const message = snapshot.val();
     displayMessage(message);
   });
@@ -68,13 +70,22 @@ if (!userId || !currentUserId) {
   sendButton.addEventListener("click", () => {
     const text = messageInput.value.trim();
     if (text) {
+      const timestamp = Date.now();
       const message = {
         sender: currentUserId,
         receiver: userId,
         text,
-        timestamp: Date.now()
+        timestamp,
+        seen: false,
+        type: "text"
       };
-      push(chatRef, message);
+
+      push(messagesRef, message);
+      set(metadataRef, {
+        lastMessage: text,
+        lastTimestamp: timestamp
+      });
+
       messageInput.value = "";
     }
   });
@@ -90,7 +101,18 @@ function displayMessage(msg) {
     messageDiv.classList.add("received");
   }
 
-  messageDiv.textContent = msg.text;
+  const time = new Date(msg.timestamp).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  messageDiv.innerHTML = `
+    <div class="message-content">
+      <p class="text">${msg.text}</p>
+      <span class="timestamp">${time}</span>
+    </div>
+  `;
+
   chatBox.appendChild(messageDiv);
   chatBox.scrollTop = chatBox.scrollHeight;
 }

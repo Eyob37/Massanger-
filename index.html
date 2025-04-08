@@ -261,55 +261,75 @@ document
 
 
 const chatList = document.getElementById("chat-list");
-const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-const currentUserId = userInfo?.id;
+const currentUserId = auth.currentUser.uid; // Get current user ID from auth
 const usersPreviewed = new Set(); // To avoid duplicates
 
-// Listen for all chat messages
-// Firebase reference
+// Listen for all chats where current user is a participant
 const chatsRef = ref(db, "EyobChat/chats/");
-
-// Listen for all chats (existing and new)
 onValue(chatsRef, (snapshot) => {
-  snapshot.forEach((childSnap) => {
-    const chatId = childSnap.key;
+  chatList.innerHTML = ""; // Clear existing previews
+  usersPreviewed.clear(); // Reset the Set
 
-    // Only preview chats that involve the current user
-    if (!chatId.includes(currentUserId)) return;
-
-    const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);
-    get(metadataRef).then(metaSnap => {
-      if (metaSnap.exists()) {
-        const data = metaSnap.val();
-        const otherUserId = chatId.replace(currentUserId, "").replace("_", "");
-
-        const senderRef = ref(db, "EyobChat/users/" + otherUserId);
-        get(senderRef).then(userSnap => {
-          if (userSnap.exists() && !usersPreviewed.has(otherUserId)) {
-            usersPreviewed.add(otherUserId);
+  snapshot.forEach((chatSnap) => {
+    const chatId = chatSnap.key;
+    
+    // Check if this chat involves the current user
+    if (chatId.includes(currentUserId)) {
+      const metadata = chatSnap.child("metadata").val();
+      const messagesRef = chatSnap.child("messages");
+      
+      // Extract the other user's ID from chat ID
+      const userIds = chatId.split('_').slice(1); // ["123", "456"]
+      const otherUserId = userIds[0] === currentUserId ? userIds[1] : userIds[0];
+      
+      if (!usersPreviewed.has(otherUserId)) {
+        usersPreviewed.add(otherUserId);
+        
+        // Get the other user's info
+        const userRef = ref(db, `EyobChat/users/${otherUserId}`);
+        get(userRef).then((userSnap) => {
+          if (userSnap.exists()) {
             const user = userSnap.val();
-            createUserPreviewDiv(user, data.lastMessage, otherUserId);
+            createUserPreviewDiv(user, metadata.lastMessage, otherUserId, chatId);
           }
+        }).catch((error) => {
+          console.error("Error fetching user info:", error);
         });
       }
-    });
+    }
   });
 });
 
 // Function to create the preview div
-function createUserPreviewDiv(user, lastMessage, userId) {
+function createUserPreviewDiv(user, lastMessage, userId, chatId) {
   const div = document.createElement("div");
   div.classList.add("chat-preview");
-
+  
+  // Add online/offline indicator based on user status
+  const statusClass = user.status === "online" ? "online" : "offline";
+  div.classList.add(statusClass);
+  
   div.innerHTML = `
-    <strong>${user.name}</strong> - ${lastMessage}
+    <div class="preview-avatar">${user.name.charAt(0).toUpperCase()}</div>
+    <div class="preview-content">
+      <strong>${user.name}</strong>
+      <p>${lastMessage || "No messages yet"}</p>
+    </div>
+    <div class="preview-time">${formatTime(metadata.lastTimestamp)}</div>
   `;
 
   div.addEventListener("click", () => {
-    window.location.href = `user-detail.html?userId=${userId}`;
+    window.location.href = `user-detail.html?userId=${userId}&chatId=${chatId}`;
   });
 
   chatList.appendChild(div);
+}
+
+// Helper function to format timestamp
+function formatTime(timestamp) {
+  if (!timestamp) return "";
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 </script>
 <script>

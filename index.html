@@ -268,21 +268,22 @@ const usersPreviewed = new Set(); // To avoid duplicates
 const chatsRef = ref(db, "EyobChat/chats/");
 onChildAdded(chatsRef, (snapshot) => {
   const chatId = snapshot.key;
-  const chatMessagesRef = ref(db, `EyobChat/chats/${chatId}/messages`);
 
-  onChildAdded(chatMessagesRef, (snap) => {
-    const msg = snap.val();
-console.log(" Hello: ",msg);
-    // Check if message is sent to current user
-    if (msg.receiver === currentUserId && !usersPreviewed.has(msg.sender)) {
-      usersPreviewed.add(msg.sender);
+  // Only preview chats that involve the current user
+  if (!chatId.includes(currentUserId)) return;
 
-      // Fetch sender info
-      const senderRef = ref(db, "EyobChat/users/" + msg.sender);
+  const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);
+  get(metadataRef).then(metaSnap => {
+    if (metaSnap.exists()) {
+      const data = metaSnap.val();
+      const otherUserId = chatId.replace(currentUserId, "").replace("_", "");
+
+      const senderRef = ref(db, "EyobChat/users/" + otherUserId);
       get(senderRef).then(userSnap => {
-        if (userSnap.exists()) {
+        if (userSnap.exists() && !usersPreviewed.has(otherUserId)) {
+          usersPreviewed.add(otherUserId);
           const user = userSnap.val();
-          createUserPreviewDiv(user, msg.text, msg.sender);
+          createUserPreviewDiv(user, data.lastMessage, otherUserId);
         }
       });
     }

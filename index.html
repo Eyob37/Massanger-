@@ -268,7 +268,7 @@ const usersPreviewed = new Set(); // To avoid duplicates
 const chatsRef = ref(db, "EyobChat/chats/");
 onChildAdded(chatsRef, (snapshot) => {
   const chatId = snapshot.key;
-
+alert("it is working");
   // Only preview chats that involve the current user
   if (!chatId.includes(currentUserId)) return;
 

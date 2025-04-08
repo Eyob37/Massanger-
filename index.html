@@ -260,6 +260,7 @@ document
   });
 
 const chatList = document.getElementById("chat-list");
+const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const currentUserId = userInfo?.id;
 const usersPreviewed = new Set(); // To avoid duplicates
 

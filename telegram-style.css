@@ -341,6 +341,55 @@ body {
   margin-right: 10px;
 }
 
+.chat-preview {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.chat-preview:hover {
+  background-color: #f5f5f5;
+}
+
+.preview-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.preview-content {
+  flex: 1;
+}
+
+.preview-content p {
+  margin: 4px 0 0;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-time {
+  color: #999;
+  font-size: 0.8em;
+}
+
+.online .preview-avatar {
+  background-color: #4CAF50;
+}
+
+.offline .preview-avatar {
+  background-color: #9E9E9E;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .search-container {

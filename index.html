@@ -42,6 +42,7 @@
 
       <div class="chat-messages">
         <p>You are now logged in.</p>
+        <div id="chat-list"></div>
       </div>
     </div>
 
@@ -256,6 +257,52 @@ document
           "<p>Error searching user.</p>";
       });
   });
+
+const chatList = document.getElementById("chat-list");
+
+const usersPreviewed = new Set(); // To avoid duplicates
+
+// Listen for all chat messages
+const chatsRef = ref(db, "EyobChat/chats/");
+onChildAdded(chatsRef, (snapshot) => {
+  const chatId = snapshot.key;
+  const chatMessagesRef = ref(db, `EyobChat/chats/${chatId}/messages`);
+
+  onChildAdded(chatMessagesRef, (snap) => {
+    const msg = snap.val();
+
+    // Check if message is sent to current user
+    if (msg.receiver === currentUserId && !usersPreviewed.has(msg.sender)) {
+      usersPreviewed.add(msg.sender);
+
+      // Fetch sender info
+      const senderRef = ref(db, "EyobChat/users/" + msg.sender);
+      get(senderRef).then(userSnap => {
+        if (userSnap.exists()) {
+          const user = userSnap.val();
+          createUserPreviewDiv(user, msg.text);
+        }
+      });
+    }
+  });
+});
+
+// Function to create the preview div
+function createUserPreviewDiv(user, lastMessage) {
+  const div = document.createElement("div");
+  div.classList.add("chat-preview");
+
+  div.innerHTML = `
+    <strong>${user.name}</strong> - ${lastMessage}
+  `;
+
+  div.addEventListener("click", () => {
+    window.location.href = `user-detail.html?userId=${user.id}`;
+  });
+
+  chatList.appendChild(div);
+}
+
 </script>
 <script>
 // Sidebar toggle functionality

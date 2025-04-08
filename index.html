@@ -261,7 +261,8 @@ document
 
 
 const chatList = document.getElementById("chat-list");
-const currentUserId = auth.currentUser.uid; // Get current user ID from auth
+const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+const currentUserId = userInfo?.id;
 const usersPreviewed = new Set(); // To avoid duplicates
 
 // Listen for all chats where current user is a participant

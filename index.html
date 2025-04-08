@@ -272,7 +272,6 @@ const chatsRef = ref(db, "EyobChat/chats/");
 // Listen for all chats (existing and new)
 onValue(chatsRef, (snapshot) => {
   snapshot.forEach((childSnap) => {
-    alert("It is working");
     const chatId = childSnap.key;
 
     // Only preview chats that involve the current user

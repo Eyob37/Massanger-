@@ -263,10 +263,11 @@ const chatList = document.getElementById("chat-list");
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const currentUserId = userInfo?.id;
 const usersPreviewed = new Set(); // To avoid duplicates
-alert("it is working");
+
 // Listen for all chat messages
 const chatsRef = ref(db, "EyobChat/chats/");
 onChildAdded(chatsRef, (snapshot) => {
+alert("it is working");
   const chatId = snapshot.key;
 
   // Only preview chats that involve the current user

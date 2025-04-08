@@ -272,7 +272,7 @@ onChildAdded(chatsRef, (snapshot) => {
 
   onChildAdded(chatMessagesRef, (snap) => {
     const msg = snap.val();
-console.log(msg.receiver);
+console.log(" Hello: ",msg.receiver);
     // Check if message is sent to current user
     if (msg.receiver === currentUserId && !usersPreviewed.has(msg.sender)) {
       usersPreviewed.add(msg.sender);

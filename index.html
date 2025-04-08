@@ -263,7 +263,6 @@ document
 const chatList = document.getElementById("chat-list");
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const currentUserId = userInfo?.id;
-const usersPreviewed = new Set(); // To avoid duplicates
 
 // Listen for all chats where current user is a participant
 const chatsRef = ref(db, "EyobChat/chats/");

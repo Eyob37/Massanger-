@@ -265,29 +265,34 @@ const currentUserId = userInfo?.id;
 const usersPreviewed = new Set(); // To avoid duplicates
 
 // Listen for all chat messages
+// Firebase reference
 const chatsRef = ref(db, "EyobChat/chats/");
-onChildAdded(chatsRef, (snapshot) => {
-alert("it is working");
-  const chatId = snapshot.key;
 
-  // Only preview chats that involve the current user
-  if (!chatId.includes(currentUserId)) return;
+// Listen for all chats (existing and new)
+onValue(chatsRef, (snapshot) => {
+  snapshot.forEach((childSnap) => {
+    alert("It is working");
+    const chatId = childSnap.key;
 
-  const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);
-  get(metadataRef).then(metaSnap => {
-    if (metaSnap.exists()) {
-      const data = metaSnap.val();
-      const otherUserId = chatId.replace(currentUserId, "").replace("_", "");
+    // Only preview chats that involve the current user
+    if (!chatId.includes(currentUserId)) return;
 
-      const senderRef = ref(db, "EyobChat/users/" + otherUserId);
-      get(senderRef).then(userSnap => {
-        if (userSnap.exists() && !usersPreviewed.has(otherUserId)) {
-          usersPreviewed.add(otherUserId);
-          const user = userSnap.val();
-          createUserPreviewDiv(user, data.lastMessage, otherUserId);
-        }
-      });
-    }
+    const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);
+    get(metadataRef).then(metaSnap => {
+      if (metaSnap.exists()) {
+        const data = metaSnap.val();
+        const otherUserId = chatId.replace(currentUserId, "").replace("_", "");
+
+        const senderRef = ref(db, "EyobChat/users/" + otherUserId);
+        get(senderRef).then(userSnap => {
+          if (userSnap.exists() && !usersPreviewed.has(otherUserId)) {
+            usersPreviewed.add(otherUserId);
+            const user = userSnap.val();
+            createUserPreviewDiv(user, data.lastMessage, otherUserId);
+          }
+        });
+      }
+    });
   });
 });
 

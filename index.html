@@ -263,6 +263,7 @@ const chatList = document.getElementById("chat-list");
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const currentUserId = userInfo?.id;
 const usersPreviewed = new Set(); // To avoid duplicates
+console.log(" Hello: ",currentUserId);
 
 // Listen for all chat messages
 const chatsRef = ref(db, "EyobChat/chats/");
@@ -272,7 +273,7 @@ onChildAdded(chatsRef, (snapshot) => {
 
   onChildAdded(chatMessagesRef, (snap) => {
     const msg = snap.val();
-console.log(" Hello: ",msg.receiver);
+
     // Check if message is sent to current user
     if (msg.receiver === currentUserId && !usersPreviewed.has(msg.sender)) {
       usersPreviewed.add(msg.sender);

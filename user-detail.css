@@ -128,6 +128,17 @@ body {
   background: #a8a8a8;
 }
 
+.chat-preview {
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.chat-preview:hover {
+  background-color: #e0e0e0;
+}
+
 /* Responsive design */
 @media (max-width: 600px) {
   body {

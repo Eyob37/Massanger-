@@ -312,8 +312,12 @@ document
 
 
 const chatList = document.getElementById("chat-list");
-const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-const currentUserId = userInfo?.id;
+// Replace this:
+// const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+// const currentUserId = userInfo?.id;
+
+// With this:
+const currentUserId = auth.currentUser?.uid;
 alert(currentUserId);
 const usersPreviewed = new Set();
 

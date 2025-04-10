@@ -316,10 +316,9 @@ const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const currentUserId1 = String(userInfo?.id.trim());
 const currentUserId = "2lnnQurur5ewGnqwJcRX7c4Z3Ba2";
 
-alert("type of current by function: ",typeof currentUserId);
-alert("type of current actual: ",typeof currentUserId);
-console.log("type of current by function: ",typeof currentUserId);
-console.log("type of current actual: ",typeof currentUserId);
+
+console.log("current by function: ",currentUserId);
+console.log("current actual: ",currentUserId);
 const usersPreviewed = new Set();
 
     const chatsRef = ref(db, "EyobChat/chats/");

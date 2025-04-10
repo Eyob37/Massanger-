@@ -263,75 +263,67 @@ document
 const chatList = document.getElementById("chat-list");
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const currentUserId = userInfo?.id;
-const usersPreviewed = new Set(); // To avoid duplicates
+const usersPreviewed = new Set();
 
-// Listen for all chats where current user is a participant
-const chatsRef = ref(db, "EyobChat/chats/");
-onValue(chatsRef, (snapshot) => {
-  chatList.innerHTML = ""; // Clear existing previews
-  usersPreviewed.clear(); // Reset the Set
+    const chatsRef = ref(db, "EyobChat/chats/");
+    onValue(chatsRef, (snapshot) => {
+      chatList.innerHTML = "";
+      usersPreviewed.clear();          
+      snapshot.forEach((chatSnap) => {
+        const chatId = chatSnap.key;
 
-  snapshot.forEach((chatSnap) => {
-    const chatId = chatSnap.key;
- alert("hello");   
-    // Check if this chat involves the current user
-    if (chatId.includes(currentUserId)) {
-      const metadata = chatSnap.child("metadata").val();
-      const messagesRef = chatSnap.child("messages");
-      
-      // Extract the other user's ID from chat ID
-      const userIds = chatId.split('_').slice(1); // ["123", "456"]
-      const otherUserId = userIds[0] === currentUserId ? userIds[1] : userIds[0];
-      
-      if (!usersPreviewed.has(otherUserId)) {
-        usersPreviewed.add(otherUserId);
-        
-        // Get the other user's info
-        const userRef = ref(db, `EyobChat/users/${otherUserId}`);
-        get(userRef).then((userSnap) => {
-          if (userSnap.exists()) {
-            const user = userSnap.val();
-            createUserPreviewDiv(user, metadata.lastMessage, otherUserId, chatId);
+        if (chatId.includes(currentUserId)) {
+          const metadata = chatSnap.child("metadata").val();
+          const userIds = chatId.split('_').slice(1);
+          const otherUserId = userIds[0] === currentUserId ? userIds[1] : userIds[0];
+
+          if (!usersPreviewed.has(otherUserId)) {
+            usersPreviewed.add(otherUserId);
+
+            const userRef = ref(db, `EyobChat/users/${otherUserId}`);
+            get(userRef).then((userSnap) => {
+              if (userSnap.exists()) {
+                const user = userSnap.val();
+                const lastMessage = metadata?.lastMessage || "No messages yet";
+                const lastTimestamp = metadata?.lastTimestamp || null;
+                createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);
+              }
+            }).catch((error) => {
+              console.error("Error fetching user info:", error);
+            });
           }
-        }).catch((error) => {
-          console.error("Error fetching user info:", error);
-        });
-      }
+        }
+      });
+    });
+
+    function createUserPreviewDiv(user, lastMessage, userId, chatId, lastTimestamp) {
+      const div = document.createElement("div");
+      div.classList.add("chat-preview");
+
+      const statusClass = user.status === "online" ? "online" : "offline";
+      div.classList.add(statusClass);
+
+      div.innerHTML = `
+        <div class="preview-avatar">${user.name.charAt(0).toUpperCase()}</div>
+        <div class="preview-content">
+          <strong>${user.name}</strong>
+          <p>${lastMessage}</p>
+        </div>
+        <div class="preview-time">${formatTime(lastTimestamp)}</div>
+      `;
+
+      div.addEventListener("click", () => {
+        window.location.href = `user-detail.html?userId=${userId}&chatId=${chatId}`;
+      });
+
+      chatList.appendChild(div);
     }
-  });
-});
 
-// Function to create the preview div
-function createUserPreviewDiv(user, lastMessage, userId, chatId) {
-  const div = document.createElement("div");
-  div.classList.add("chat-preview");
-  
-  // Add online/offline indicator based on user status
-  const statusClass = user.status === "online" ? "online" : "offline";
-  div.classList.add(statusClass);
-  
-  div.innerHTML = `
-    <div class="preview-avatar">${user.name.charAt(0).toUpperCase()}</div>
-    <div class="preview-content">
-      <strong>${user.name}</strong>
-      <p>${lastMessage || "No messages yet"}</p>
-    </div>
-    <div class="preview-time">${formatTime(metadata.lastTimestamp)}</div>
-  `;
-
-  div.addEventListener("click", () => {
-    window.location.href = `user-detail.html?userId=${userId}&chatId=${chatId}`;
-  });
-
-  chatList.appendChild(div);
-}
-
-// Helper function to format timestamp
-function formatTime(timestamp) {
-  if (!timestamp) return "";
-  const date = new Date(timestamp);
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
+    function formatTime(timestamp) {
+      if (!timestamp) return "";
+      const date = new Date(timestamp);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
 </script>
 <script>
 // Sidebar toggle functionality

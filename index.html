@@ -273,7 +273,7 @@ onValue(chatsRef, (snapshot) => {
 
   snapshot.forEach((chatSnap) => {
     const chatId = chatSnap.key;
-    
+ alert("hello");   
     // Check if this chat involves the current user
     if (chatId.includes(currentUserId)) {
       const metadata = chatSnap.child("metadata").val();

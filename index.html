@@ -313,9 +313,11 @@ document
 
 const chatList = document.getElementById("chat-list");
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-const currentUserId = String(userInfo?.id.trim());
+const currentUserId1 = String(userInfo?.id.trim());
+const currentUserId = "2lnnQurur5ewGnqwJcRX7c4Z3Ba2";
 
-alert(currentUserId);
+alert("type of current by function: ",typeof currentUserId);
+alert("type of current actual: ",typeof currentUserId);
 const usersPreviewed = new Set();
 
     const chatsRef = ref(db, "EyobChat/chats/");

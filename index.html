@@ -312,7 +312,8 @@ document
 
 
 const chatList = document.getElementById("chat-list");
-
+const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+const currentUserId = userInfo?.id;
 const usersPreviewed = new Set();
 
     const chatsRef = ref(db, "EyobChat/chats/");
@@ -325,7 +326,7 @@ const usersPreviewed = new Set();
         if (chatId.includes(currentUserId)) {
           const metadata = chatSnap.child("metadata").val();
           const userIds = chatId.split('_').slice(1);
-          const otherUserId = userIds[0] === currentUserId ? userIds[1] : userIds[0];
+          const otherUserId = userIds[0] == currentUserId ? userIds[1] : userIds[0];
 
           if (!usersPreviewed.has(otherUserId)) {
             usersPreviewed.add(otherUserId);

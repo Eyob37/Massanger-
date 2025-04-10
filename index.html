@@ -270,7 +270,7 @@ const chatsRef = ref(db, "EyobChat/chats/");
 onValue(chatsRef, (snapshot) => {
   chatList.innerHTML = ""; // Clear existing previews
   usersPreviewed.clear(); // Reset the Set
-
+alert("what's going on?");
   snapshot.forEach((chatSnap) => {
     const chatId = chatSnap.key;
     

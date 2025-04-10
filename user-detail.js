@@ -1,4 +1,3 @@
-
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
@@ -27,6 +26,11 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+
+// Ask for notification permission
+if ("Notification" in window && Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
 
 // Get userId from URL
 const params = new URLSearchParams(window.location.search);
@@ -64,6 +68,12 @@ if (!userId || !currentUserId) {
   onChildAdded(messagesRef, (snapshot) => {
     const message = snapshot.val();
     displayMessage(message);
+
+    // Notify only if the message is from the other user
+    if (message.sender !== currentUserId) {
+      showNotification(message.text);
+      playNotificationSound();
+    }
   });
 
   // Send message
@@ -115,4 +125,18 @@ function displayMessage(msg) {
 
   chatBox.appendChild(messageDiv);
   chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function showNotification(text) {
+  if (Notification.permission === "granted") {
+    new Notification("New message", {
+      body: text,
+      icon: "chat-icon.png" // Optional: change to your icon
+    });
+  }
+}
+
+function playNotificationSound() {
+  const audio = new Audio('notification.mp3'); // Make sure this file exists
+  audio.play();
 }

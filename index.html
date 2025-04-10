@@ -313,7 +313,7 @@ document
 
 const chatList = document.getElementById("chat-list");
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-const currentUserId = userInfo?.id;
+const currentUserId = String(userInfo?.id.trim());
 
 alert(currentUserId);
 const usersPreviewed = new Set();

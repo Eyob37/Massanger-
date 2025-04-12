@@ -205,7 +205,7 @@ document
     signOut(auth)
       .then(() => {
         alert("Logged out.");
-        localStorage.setItem("userEmail", null);
+        localStorage.setItem("userInfo", null);
         window.location.href = "signup.html";
       })
       .catch((error) => {

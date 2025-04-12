@@ -154,7 +154,23 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-      showNotification("ሰላም ለሁላቹም ይሁን");
+if ("Notification" in window && Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
+
+function showNotification(text) {
+  if (Notification.permission === "granted") {
+    new Notification("New message", {
+      body: text,
+      icon: "chat-icon.png" // Optional: change to your icon
+    });
+  }
+}
+ 
+     showNotification("ሰላም ለሁላቹም ይሁን");
+
+
+
 // Monitor authentication state
 onAuthStateChanged(auth, (user) => {
   if (!user) {

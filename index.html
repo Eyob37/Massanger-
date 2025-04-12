@@ -269,6 +269,9 @@ document
       await updatePassword(user, newPassword);
       document.getElementById("password-message").innerText =
         "Password updated successfully!";
+      setTimeout(() => {
+         document.getElementById("change-password-form").style.display = "none";
+      }, 2000);
     } catch (error) {
       document.getElementById("password-message").innerText =
         "Error updating password: " + error.message;

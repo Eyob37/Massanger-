@@ -154,22 +154,28 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-/*
-if ("Notification" in window && Notification.permission !== "granted") {
-  Notification.requestPermission();
+if ("Notification" in window) {
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                alert("It almost work");
+                showNotification("ሰላም ለሁላቹም ይሁን");
+            } else {
+                alert("Permission not granted");
+            }
+        });
+    } else {
+        alert("It almost work");
+        showNotification("ሰላም ለሁላቹም ይሁን");
+    }
 }
 
 function showNotification(text) {
-  if (Notification.permission === "granted") {
     new Notification("New message", {
-      body: text,
-      icon: "chat-icon.png" // Optional: change to your icon
+        body: text,
     });
-  }
+    alert("it works");
 }
- 
-     showNotification("ሰላም ለሁላቹም ይሁን");
-*/
 
 // Monitor authentication state
 onAuthStateChanged(auth, (user) => {

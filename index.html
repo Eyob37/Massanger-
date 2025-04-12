@@ -153,7 +153,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
-
+/*
 if ("Notification" in window) {
     if (Notification.permission !== "granted") {
         Notification.requestPermission().then(permission => {
@@ -176,6 +176,7 @@ function showNotification(text) {
     });
     alert("it works");
 }
+*/
 
 // Monitor authentication state
 onAuthStateChanged(auth, (user) => {

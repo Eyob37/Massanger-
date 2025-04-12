@@ -154,6 +154,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
+/*
 if ("Notification" in window && Notification.permission !== "granted") {
   Notification.requestPermission();
 }
@@ -168,8 +169,7 @@ function showNotification(text) {
 }
  
      showNotification("ሰላም ለሁላቹም ይሁን");
-
-
+*/
 
 // Monitor authentication state
 onAuthStateChanged(auth, (user) => {

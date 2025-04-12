@@ -345,7 +345,7 @@ const usersPreviewed = new Set();
 
         if (chatId.includes(currentUserId)) {
           const metadata = chatSnap.child("metadata").val();
-          const userIds = chatId.split('_').slice(1);
+          const userIds = chatId.split('_');
           const otherUserId = userIds[0] == currentUserId ? userIds[1] : userIds[0];
 
           if (!usersPreviewed.has(otherUserId)) {

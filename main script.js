@@ -245,6 +245,7 @@ const usersPreviewed = new Set();
       }
       usersPreviewed.clear();      
       chatList.innerHTML = "";    
+      a++;
       snapshot.forEach((chatSnap) => {
         const chatId = chatSnap.key;
 
@@ -266,7 +267,6 @@ const usersPreviewed = new Set();
                 if(isFirstStarte){
                   if(a >= 2) isFirstStarte = false;
                   createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);   
-                  a++;
                   return;
                 }
 

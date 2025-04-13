@@ -271,7 +271,7 @@ onValue(chatsRef, (snapshot) => {
             if(ite){
               if(a >= 1) ite = false;
               createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);   
-              return;
+              continue;
            }
 
             chatArray.push({

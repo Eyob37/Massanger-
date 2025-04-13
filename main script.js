@@ -42,6 +42,33 @@ const db = getDatabase(app);
 let onValueStoper = 0; 
 let isFirstStarte = true;
 
+if ('serviceWorker' in navigator) {
+   navigator.serviceWorker.register('sw.js').then(registration => {
+      console.log("Service Worker registered");
+      window.swRegistration = registration;
+   }).catch(err => {
+      alert("Service Worker registration failed: " + err);
+   });
+} else {
+   alert("Service Workers are not supported in this browser.");
+}
+
+       
+function showNotification(Uname, messag) {           
+   if (!window.swRegistration) {
+      alert("Service Worker not ready.");
+      return;
+   }
+
+   try {
+      window.swRegistration.showNotification(Uname, {
+         body: messag
+      });
+   } catch (error) {
+      alert("Failed to show notification: " + error.message);
+   }
+}
+
 // Monitor authentication state
 onAuthStateChanged(auth, (user) => {
   if (!user) {
@@ -201,6 +228,7 @@ document
       });
   });
 
+const lastMessageCache = {};
 
 const chatList = document.getElementById("chat-list");
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -233,6 +261,31 @@ const usersPreviewed = new Set();
                 const user = userSnap.val();
                 const lastMessage = metadata?.lastMessage || "No messages yet";
                 const lastTimestamp = metadata?.lastTimestamp || null;
+
+         if (
+              lastMessage && 
+              (!lastMessageCache[chatId] || lastMessageCache[chatId] !== lastMessage)
+            ) {
+              // Only notify if the last sender is not the current user
+              const lastSender = metadata?.lastSender || "";
+              if (lastSender !== currentUserId) {
+                if (!("Notification" in window)) {
+                  alert("This browser does not support notifications.");
+                  return;
+                }
+ 
+                Notification.requestPermission().then(permission => {
+                  if (permission === "granted") {
+                     showNotification(`${user.name}`,`${lastMessage}`);
+                  } else {
+                    alert("Permission denied.");
+                  }
+                });
+              }
+
+              lastMessageCache[chatId] = lastMessage;
+            }
+
                 createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);
               }
             }).catch((error) => {

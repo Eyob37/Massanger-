@@ -42,6 +42,7 @@ const db = getDatabase(app);
 let a = 0;
 let onValueStoper = 0; 
 let isFirstStarte = true;
+let ite = true;
 
 if ('serviceWorker' in navigator) {
    navigator.serviceWorker.register('sw.js').then(registration => {
@@ -264,8 +265,8 @@ const usersPreviewed = new Set();
                 const lastMessage = metadata?.lastMessage || "No messages yet";
                 const lastTimestamp = metadata?.lastTimestamp || null;
 
-                if(isFirstStarte){
-                  if(a > 2) isFirstStarte = false;
+                if(ite){
+                  if(a >= 2) ite = false;
                   createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);   
                   return;
                 }

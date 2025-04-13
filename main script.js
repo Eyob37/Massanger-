@@ -39,7 +39,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-let onValueStoper = false;
+let onValueStoper = 1; 
 
 // Monitor authentication state
 onAuthStateChanged(auth, (user) => {
@@ -208,7 +208,7 @@ const usersPreviewed = new Set();
 
     const chatsRef = ref(db, "EyobChat/chats/");
     onValue(chatsRef, (snapshot) => {
-      if(onValueStoper) return;
+      if(onValueStoper % 2 != 0) return;
       usersPreviewed.clear();      
       chatList.innerHTML = "";    
       snapshot.forEach((chatSnap) => {
@@ -236,10 +236,7 @@ const usersPreviewed = new Set();
           }
         }
       });
-      onValueStoper = !onValueStoper;
-      setTimeout(() => {
-          onValueStoper = !onValueStoper;
-      }, 5000);  
+      onValueStoper++;      
     });
 
     function createUserPreviewDiv(user, lastMessage, userId, chatId, lastTimestamp) {

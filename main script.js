@@ -209,7 +209,7 @@ const usersPreviewed = new Set();
 
     const chatsRef = ref(db, "EyobChat/chats/");
     onValue(chatsRef, (snapshot) => {
-      if(onValueStoper % 2 == 0 && !isFirstStarte){
+      if(onValueStoper % 2 != 0 && !isFirstStarte){
          isFirstStarte = false;
          onValueStoper++;    
          return;

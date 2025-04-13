@@ -317,7 +317,7 @@ onValue(chatsRef, (snapshot) => {
       }
     }
   });
-  ite = !ite;
+  if(a >= 2) ite = false;
   isFirstStarte = false;
   onValueStoper++;
 });

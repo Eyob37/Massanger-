@@ -39,7 +39,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-let onValueStoper = 1; 
+let onValueStoper = 0; 
 
 // Monitor authentication state
 onAuthStateChanged(auth, (user) => {

@@ -267,12 +267,7 @@ onValue(chatsRef, (snapshot) => {
           if (userSnap.exists()) {
             const user = userSnap.val();
             const lastMessage = metadata?.lastMessage || "No messages yet";
-            const lastTimestamp = metadata?.lastTimestamp || 0;
-            if(ite){
-              if(a >= 1) ite = false;
-              createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);   
-              continue;
-           }
+            const lastTimestamp = metadata?.lastTimestamp || 0;            
 
             chatArray.push({
               user,

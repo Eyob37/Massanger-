@@ -294,7 +294,7 @@ onValue(chatsRef, (snapshot) => {
                 } = chatData;
 
                 // Show notification only for the latest chat
-                if (index === 0 && lastMessage && lastSender !== currentUserId) {
+                if (index === 0 && lastMessage && lastSender !== currentUserId && !ite) {                  
                   if (!("Notification" in window)) {
                     alert("This browser does not support notifications.");
                   } else {
@@ -317,7 +317,7 @@ onValue(chatsRef, (snapshot) => {
       }
     }
   });
-
+  ite = !ite;
   isFirstStarte = false;
   onValueStoper++;
 });

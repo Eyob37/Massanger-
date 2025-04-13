@@ -237,75 +237,90 @@ const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const currentUserId = String(userInfo?.id.trim());
 const usersPreviewed = new Set();
 
-    const chatsRef = ref(db, "EyobChat/chats/");
-    onValue(chatsRef, (snapshot) => {
-      if(onValueStoper % 2 != 0 && !isFirstStarte){
-         isFirstStarte = false;
-         onValueStoper++;    
-         return;
-      }
-      usersPreviewed.clear();      
-      chatList.innerHTML = "";    
-      a++;
-      snapshot.forEach((chatSnap) => {
-        const chatId = chatSnap.key;
+ const chatsRef = ref(db, "EyobChat/chats/");
+onValue(chatsRef, (snapshot) => {
+  if (onValueStoper % 2 !== 0 && !isFirstStarte) {
+    isFirstStarte = false;
+    onValueStoper++;
+    return;
+  }
 
-        if (chatId.includes(currentUserId)) {
-          const metadata = chatSnap.child("metadata").val();
-          const userIds = chatId.split('_');
-          const otherUserId = userIds[0] == currentUserId ? userIds[1] : userIds[0];
+  usersPreviewed.clear();
+  chatList.innerHTML = "";
+  a++;
 
-          if (!usersPreviewed.has(otherUserId)) {
-            usersPreviewed.add(otherUserId);
+  const chatArray = [];
 
-            const userRef = ref(db, `EyobChat/users/${otherUserId}`);
-            get(userRef).then((userSnap) => {
-              if (userSnap.exists()) {
-                const user = userSnap.val();
-                const lastMessage = metadata?.lastMessage || "No messages yet";
-                const lastTimestamp = metadata?.lastTimestamp || null;
+  snapshot.forEach((chatSnap) => {
+    const chatId = chatSnap.key;
 
-                if(ite){
-                  if(a >= 2) ite = false;
-                  createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);   
-                  return;
+    if (chatId.includes(currentUserId)) {
+      const metadata = chatSnap.child("metadata").val();
+      const userIds = chatId.split('_');
+      const otherUserId = userIds[0] == currentUserId ? userIds[1] : userIds[0];
+
+      if (!usersPreviewed.has(otherUserId)) {
+        usersPreviewed.add(otherUserId);
+
+        const userRef = ref(db, `EyobChat/users/${otherUserId}`);
+        get(userRef).then((userSnap) => {
+          if (userSnap.exists()) {
+            const user = userSnap.val();
+            const lastMessage = metadata?.lastMessage || "No messages yet";
+            const lastTimestamp = metadata?.lastTimestamp || 0;
+
+            chatArray.push({
+              user,
+              lastMessage,
+              otherUserId,
+              chatId,
+              lastTimestamp,
+              lastSender: metadata?.lastSender || ""
+            });
+
+            // After all user data is fetched
+            if (chatArray.length === usersPreviewed.size) {
+              // Sort by timestamp (latest first)
+              chatArray.sort((a, b) => b.lastTimestamp - a.lastTimestamp);
+
+              chatArray.forEach((chatData, index) => {
+                const {
+                  user,
+                  lastMessage,
+                  otherUserId,
+                  chatId,
+                  lastTimestamp,
+                  lastSender
+                } = chatData;
+
+                // Show notification only for the latest chat
+                if (index === 0 && lastMessage && lastSender !== currentUserId) {
+                  if (!("Notification" in window)) {
+                    alert("This browser does not support notifications.");
+                  } else {
+                    Notification.requestPermission().then((permission) => {
+                      if (permission === "granted") {
+                        showNotification(`${user.name}`, `${lastMessage}`);
+                      }
+                    });
+                  }
                 }
 
-                if (
-                  lastMessage && 
-              (!lastMessageCache[chatId] || lastMessageCache[chatId] !== lastMessage)
-                 ) {
-                // Only notify if the last sender is not the current user
-                  const lastSender = metadata?.lastSender || "";
-                  if (lastSender !== currentUserId) {
-                    if (!("Notification" in window)) {
-                      alert("This browser does not support notifications.");
-                      return;
-                    }
- 
-                  Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                      showNotification(`${user.name}`,`${lastMessage}`);
-                    } else {
-                      alert("Permission denied.");
-                    }
-                });
-              }
-
-              lastMessageCache[chatId] = lastMessage;
-            }
-
+                lastMessageCache[chatId] = lastMessage;
                 createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);
-              }
-            }).catch((error) => {
-              console.error("Error fetching user info:", error);
-            });
+              });
+            }
           }
-        }
-      });
-      isFirstStarte = false;
-      onValueStoper++;      
-    });
+        }).catch((error) => {
+          console.error("Error fetching user info:", error);
+        });
+      }
+    }
+  });
+
+  isFirstStarte = false;
+  onValueStoper++;
+});
 
     function createUserPreviewDiv(user, lastMessage, userId, chatId, lastTimestamp) {
       const div = document.createElement("div");

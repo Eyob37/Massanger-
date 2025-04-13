@@ -265,7 +265,7 @@ const usersPreviewed = new Set();
                 const lastTimestamp = metadata?.lastTimestamp || null;
 
                 if(isFirstStarte){
-                  if(a >= 2) isFirstStarte = false;
+                  if(a > 2) isFirstStarte = false;
                   createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);   
                   return;
                 }

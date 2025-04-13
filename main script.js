@@ -262,24 +262,30 @@ const usersPreviewed = new Set();
                 const lastMessage = metadata?.lastMessage || "No messages yet";
                 const lastTimestamp = metadata?.lastTimestamp || null;
 
-         if (
-              lastMessage && 
-              (!lastMessageCache[chatId] || lastMessageCache[chatId] !== lastMessage)
-            ) {
-              // Only notify if the last sender is not the current user
-              const lastSender = metadata?.lastSender || "";
-              if (lastSender !== currentUserId) {
-                if (!("Notification" in window)) {
-                  alert("This browser does not support notifications.");
+                if(!isFirstStarte){
+                  isFirstStarte = false;
+                  createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);   
                   return;
                 }
+
+                if (
+                  lastMessage && 
+              (!lastMessageCache[chatId] || lastMessageCache[chatId] !== lastMessage)
+                 ) {
+                // Only notify if the last sender is not the current user
+                  const lastSender = metadata?.lastSender || "";
+                  if (lastSender !== currentUserId) {
+                    if (!("Notification" in window)) {
+                      alert("This browser does not support notifications.");
+                      return;
+                    }
  
-                Notification.requestPermission().then(permission => {
-                  if (permission === "granted") {
-                     showNotification(`${user.name}`,`${lastMessage}`);
-                  } else {
-                    alert("Permission denied.");
-                  }
+                  Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                      showNotification(`${user.name}`,`${lastMessage}`);
+                    } else {
+                      alert("Permission denied.");
+                    }
                 });
               }
 

@@ -39,6 +39,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
+let a = 0;
 let onValueStoper = 0; 
 let isFirstStarte = true;
 
@@ -263,8 +264,9 @@ const usersPreviewed = new Set();
                 const lastTimestamp = metadata?.lastTimestamp || null;
 
                 if(isFirstStarte){
-                  isFirstStarte = false;
+                  if(a >= 2) isFirstStarte = false;
                   createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);   
+                  a++;
                   return;
                 }
 

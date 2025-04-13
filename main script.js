@@ -40,6 +40,7 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 let onValueStoper = 0; 
+let isFirstStarte = true;
 
 // Monitor authentication state
 onAuthStateChanged(auth, (user) => {
@@ -208,7 +209,7 @@ const usersPreviewed = new Set();
 
     const chatsRef = ref(db, "EyobChat/chats/");
     onValue(chatsRef, (snapshot) => {
-      if(onValueStoper % 2 != 0) return;
+      if(onValueStoper % 2 != 0 && !isFirstStarte) return;
       usersPreviewed.clear();      
       chatList.innerHTML = "";    
       snapshot.forEach((chatSnap) => {
@@ -236,6 +237,7 @@ const usersPreviewed = new Set();
           }
         }
       });
+      isFirstStarte = false;
       onValueStoper++;      
     });
 

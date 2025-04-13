@@ -269,7 +269,7 @@ onValue(chatsRef, (snapshot) => {
             const lastMessage = metadata?.lastMessage || "No messages yet";
             const lastTimestamp = metadata?.lastTimestamp || 0;
             if(ite){
-              if(a >= 2) ite = false;
+              if(a >= 1) ite = false;
               createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);   
               return;
            }

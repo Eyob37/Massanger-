@@ -262,7 +262,7 @@ const usersPreviewed = new Set();
                 const lastMessage = metadata?.lastMessage || "No messages yet";
                 const lastTimestamp = metadata?.lastTimestamp || null;
 
-                if(!isFirstStarte){
+                if(isFirstStarte){
                   isFirstStarte = false;
                   createUserPreviewDiv(user, lastMessage, otherUserId, chatId, lastTimestamp);   
                   return;

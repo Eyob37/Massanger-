@@ -63,6 +63,7 @@ if (!userId || !currentUserId) {
   const chatId = [currentUserId, userId].sort().join("_");
   const messagesRef = ref(db, `EyobChat/chats/${chatId}/messages`);
   const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);
+  const metaplayerRef = ref(db, `EyobChat/chats/metadata`);
 
   // Listen for new messages
   onChildAdded(messagesRef, (snapshot) => {
@@ -92,6 +93,11 @@ if (!userId || !currentUserId) {
 
       push(messagesRef, message);
       set(metadataRef, {
+        lastMessage: text,
+        lastTimestamp: timestamp
+      });
+      set (metaplayerRef, {
+        sender: 
         lastMessage: text,
         lastTimestamp: timestamp
       });

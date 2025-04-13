@@ -207,7 +207,7 @@ const usersPreviewed = new Set();
 
     const chatsRef = ref(db, "EyobChat/chats/");
     onValue(chatsRef, (snapshot) => {
-      alert("I get in")
+      
       chatList.innerHTML = "";
       usersPreviewed.clear();          
       snapshot.forEach((chatSnap) => {

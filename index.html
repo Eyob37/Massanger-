@@ -1,37 +1,129 @@
-<!DOCTYPE html>  
-<html lang="en">  
-<head>  
-    <meta charset="UTF-8">  
-    <title>Page title</title>  
-</head>  
-<body>  
-    hello, it is updated  
-    <script>  
-if ("Notification" in window) {  
-    if (Notification.permission !== "granted") {  
-        Notification.requestPermission().then(permission => {  
-            if (permission === "granted") {  
-                alert("It almost work");  
-                showNotification("ሰላም ለሁላቹም ይሁን");  
-            } else {  
-                alert("Permission not granted");  
-            }  
-        });  
-    } else {  
-        alert("It almost work");  
-        showNotification("ሰላም ለሁላቹም ይሁን");  
-    }  
-} else{
-alert("does not support");
-} 
-  
-function showNotification(text) {  
-    new Notification("New message", {  
-        body: text,  
-        icon: "chat-icon.png"  
-    });  
-    alert("it works");  
-}  
-</script>  
-</body>  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eyob Chat App</title>
+  <link rel="stylesheet" href="telegram-style.css">
+  <style>
+
+    .chat-preview {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    .chat-preview:hover {
+      background-color: #f5f5f5;
+    }
+
+    .preview-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #4CAF50;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+    }
+
+    .preview-content {
+      flex: 1;
+    }
+
+    .preview-content p {
+      margin: 4px 0 0;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preview-time {
+      color: #999;
+      font-size: 0.8em;
+    }
+
+    .online .preview-avatar {
+      background-color: #4CAF50;
+    }
+
+    .offline .preview-avatar {
+      background-color: #9E9E9E;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <div id="menu" onclick="controlWidth()">
+      <input onclick="controlWidth()" id="checkbox" type="checkbox">
+      <label class="toggle" for="checkbox">
+        <div id="bar1" class="bars"></div>
+        <div id="bar2" class="bars"></div>
+        <div id="bar3" class="bars"></div>
+      </label>
+      <div class="sidebar-content">
+        <div class="sidebar-header">
+          <h2>Eyob Chat</h2>
+          <button id="logout-button">Logout</button>
+        </div>
+        <div class="sidebar-menu">
+          <button id="change-password-button">Change Password</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-area">
+      <div class="chat-header">
+        <h2>Welcome to Eyob Chat!</h2>
+      </div>
+
+      <!-- Search User by ID (Email) -->
+      <div class="search-container">
+        <input type="text" id="search-email" placeholder="Search online users by email..." />
+        <button id="search-button">Search</button>
+        <div id="search-results"></div>
+      </div>
+
+      <div class="chat-messages">
+        <div id="chat-list"></div>
+      </div>
+    </div>
+
+    <!-- Change Password Form -->
+    <div id="change-password-form" class="modal">
+      <div class="modal-content">
+        <h2>Change Your Password</h2>
+        <form id="change-password-form-content">
+          <input type="password" id="current-password" placeholder="Enter current password" required>
+          <input type="password" id="new-password" placeholder="Enter new password" required>
+          <button type="submit">Update Password</button>
+        </form>
+        <p id="password-message"></p>
+        <button id="close-modal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="main script.js"></script>
+<script>
+// Sidebar toggle functionality
+function controlWidth() {
+  const menu = document.getElementById("menu");
+  const checkBox = document.getElementById("checkbox");
+
+  if (checkBox.checked) {
+    menu.classList.add("expanded");
+  } else {
+    menu.classList.remove("expanded");
+  }
+}
+</script>
+</body>
 </html>

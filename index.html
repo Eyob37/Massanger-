@@ -21,7 +21,9 @@ if ("Notification" in window) {
         alert("It almost work");  
         showNotification("ሰላም ለሁላቹም ይሁን");  
     }  
-}  
+} else{
+alert("does not support");
+} 
   
 function showNotification(text) {  
     new Notification("New message", {  

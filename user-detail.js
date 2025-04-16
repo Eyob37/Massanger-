@@ -59,7 +59,7 @@ if (!userId || !currentUserId) {
 
   // Generate unique chat room ID
   const chatId = [currentUserId, userId].sort().join("_");
-  const messagesRef = ref(db, `EyobChat/chats/${chatId}/messages`);
+   messagesRef = ref(db, `EyobChat/chats/${chatId}/messages`);
   const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);  
   
   // Listen for new messages

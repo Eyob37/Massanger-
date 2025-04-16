@@ -64,12 +64,18 @@ if (!userId || !currentUserId) {
   
   // Listen for new messages
   onChildAdded(messagesRef, (snapshot) => {
-    const message = snapshot.val();
-    displayMessage(message);
+  const message = snapshot.val();
+  const messageKey = snapshot.key;
 
-    // Notify only if the message is from the other user
-    
-  });
+  displayMessage(message);
+
+  // Mark as seen if it's from the other user
+  if (message.sender !== currentUserId) {
+    update(ref(db, `EyobChat/chats/${chatId}/messages/${messageKey}`), {
+      seen: true
+    });
+  }
+});
 
   // Send message
   sendButton.addEventListener("click", () => {
@@ -104,9 +110,7 @@ function displayMessage(msg) {
     messageDiv.classList.add("sent");
   } else {
     messageDiv.classList.add("received");
-    update(messagesRef, {
-        seen: true
-    });   
+    
   }
 
   const time = new Date(msg.timestamp).toLocaleTimeString([], {

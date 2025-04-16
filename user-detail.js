@@ -120,7 +120,7 @@ onValue(messagesRef, (snapshot) => {
          }
        }
      });
-
+  });
 });
 
 function displayMessage(msg) {

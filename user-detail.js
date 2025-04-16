@@ -112,7 +112,7 @@ onValue(messagesRef, (snapshot) => {
        if (snapshot.exists()) {
          const data = snapshot.val();
          if (data.seen && data.sender === currentUserId) {
-           seenHTML = `<span class="seen-icon">${msg.seen ? "✔✔" : "✔"}</span>`;
+           seenHTML = `<span class="seen-icon">"✔✔"</span>`;
            const messageDiv = document.querySelector(".${data.timestamp} div span");
            if(messageDiv){
                messageDiv.innerHTML = seenHTML;

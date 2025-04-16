@@ -100,11 +100,11 @@ function displayMessage(msg) {
 
   if (msg.sender === currentUserId) {
     messageDiv.classList.add("sent");
-    update(messagesRef, {
-        seen: true
-      });   
   } else {
     messageDiv.classList.add("received");
+    update(messagesRef, {
+        seen: true
+    });   
   }
 
   const time = new Date(msg.timestamp).toLocaleTimeString([], {

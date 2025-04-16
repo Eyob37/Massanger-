@@ -7,6 +7,7 @@ import {
   ref,
   get,
   push,
+  update,
   set,
   onChildAdded
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
@@ -57,9 +58,7 @@ if (!userId || !currentUserId) {
   // Generate unique chat room ID
   const chatId = [currentUserId, userId].sort().join("_");
   const messagesRef = ref(db, `EyobChat/chats/${chatId}/messages`);
-  const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);
-  const metaPlayerRef = ref(db, `EyobChat/metadata`);
-  
+  const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);  
   
   // Listen for new messages
   onChildAdded(messagesRef, (snapshot) => {
@@ -101,6 +100,9 @@ function displayMessage(msg) {
 
   if (msg.sender === currentUserId) {
     messageDiv.classList.add("sent");
+    update(messagesRef, {
+        seen: true
+      });   
   } else {
     messageDiv.classList.add("received");
   }

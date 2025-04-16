@@ -169,5 +169,5 @@ jibody {
 }
 
 .sent .seen-icon {
-  color: ${/* blue for seen, gray for not seen */''} #4fc3f7;
+  color: ${/* blue for seen, gray for not seen */'red'} #4fc3f7;
 }

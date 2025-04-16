@@ -102,6 +102,27 @@ if (!userId || !currentUserId) {
   });
 }
 
+onValue(messagesRef, (snapshot) => {
+  snapshot.forEach((chatSnap) => {
+     const RN = chatSnap.key;
+     let seenHTML = "";
+     const messageRef = ref(db, `EyobChat/chats/${chatId}/messages/${RN}`);
+
+     get(messageRef).then((snapshot) => {
+       if (snapshot.exists()) {
+         const data = snapshot.val();
+         if (data.seen && data.sender === currentUserId) {
+           seenHTML = `<span class="seen-icon">${msg.seen ? "✔✔" : "✔"}</span>`;
+           const messageDiv = document.querySelector(".${data.timestamp} div span");
+           if(messageDiv){
+               messageDiv.innerHTML = seenHTML;
+           }          
+         }
+       }
+     });
+
+});
+
 function displayMessage(msg) {
   const messageDiv = document.createElement("div");
   messageDiv.classList.add("message");
@@ -113,6 +134,8 @@ function displayMessage(msg) {
   } else {
     messageDiv.classList.add("received");
   }
+
+  messageDiv.classList.add(msg.timestamp);
 
   const time = new Date(msg.timestamp).toLocaleTimeString([], {
     hour: '2-digit',

@@ -296,7 +296,7 @@ onValue(chatsRef, (snapshot) => {
                 // Show notification only for the latest chat
                 if (index === 0 && lastMessage && lastSender !== currentUserId && !ite) {                  
                   if (!("Notification" in window)) {
-                    alert("This browser does not support notifications.");
+                    
                   } else {
                     Notification.requestPermission().then((permission) => {
                       if (permission === "granted") {

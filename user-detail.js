@@ -106,11 +106,12 @@ function displayMessage(msg) {
   const messageDiv = document.createElement("div");
   messageDiv.classList.add("message");
 
-  if (msg.sender === currentUserId) {
+  const isSent = msg.sender === currentUserId;
+
+  if (isSent) {
     messageDiv.classList.add("sent");
   } else {
     messageDiv.classList.add("received");
-    
   }
 
   const time = new Date(msg.timestamp).toLocaleTimeString([], {
@@ -118,10 +119,16 @@ function displayMessage(msg) {
     minute: '2-digit'
   });
 
+  let seenHTML = "";
+  if (isSent) {
+    // Single check if not seen, double if seen
+    seenHTML = `<span class="seen-icon">${msg.seen ? "✔✔" : "✔"}</span>`;
+  }
+
   messageDiv.innerHTML = `
     <div class="message-content">
       <p class="text">${msg.text}</p>
-      <span class="timestamp">${time}</span>
+      <span class="timestamp">${time} ${seenHTML}</span>
     </div>
   `;
 

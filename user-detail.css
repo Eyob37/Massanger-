@@ -1,4 +1,4 @@
-body {
+jibody {
   font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   padding: 20px;
   max-width: 800px;
@@ -161,4 +161,13 @@ body {
   #send-button {
     width: 100%;
   }
+}
+.seen-icon {
+  font-size: 12px;
+  margin-left: 6px;
+  color: gray;
+}
+
+.sent .seen-icon {
+  color: ${/* blue for seen, gray for not seen */''} #4fc3f7;
 }

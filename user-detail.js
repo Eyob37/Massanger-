@@ -26,7 +26,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const db = getDatabase(app)
+
+let messagesRef; // Declare globally
 
 // Get userId from URL
 const params = new URLSearchParams(window.location.search);

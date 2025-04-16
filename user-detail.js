@@ -118,6 +118,8 @@ alert("onValue starts run");
            const messageDiv = document.querySelector(".${data.timestamp} div span");
            if(messageDiv){
                messageDiv.innerHTML = seenHTML;
+           }else{
+             alert("It can't get");
            }          
          }
        }

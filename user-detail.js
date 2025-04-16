@@ -120,7 +120,7 @@ function displayMessage(msg) {
   });
 
   let seenHTML = "";
-  if (isSent) {
+  if (!isSent) {
     // Single check if not seen, double if seen
     seenHTML = `<span class="seen-icon">${msg.seen ? "✔✔" : "✔"}</span>`;
   }

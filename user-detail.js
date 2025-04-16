@@ -58,6 +58,8 @@ if (!userId || !currentUserId) {
   const chatId = [currentUserId, userId].sort().join("_");
   const messagesRef = ref(db, `EyobChat/chats/${chatId}/messages`);
   const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);
+  const metaPlayerRef = ref(db, `EyobChat/metadata`);
+  
   
   // Listen for new messages
   onChildAdded(messagesRef, (snapshot) => {
@@ -86,7 +88,7 @@ if (!userId || !currentUserId) {
       set(metadataRef, {
         lastMessage: text,
         lastTimestamp: timestamp
-      });
+      });      
 
       messageInput.value = "";
     }

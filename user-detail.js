@@ -104,6 +104,7 @@ if (!userId || !currentUserId) {
 }
 
 onValue(messagesRef, (snapshot) => {
+alert("onValue starts run");
   snapshot.forEach((chatSnap) => {
      const RN = chatSnap.key;
      let seenHTML = "";

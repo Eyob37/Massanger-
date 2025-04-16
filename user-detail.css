@@ -165,9 +165,9 @@ jibody {
 .seen-icon {
   font-size: 12px;
   margin-left: 6px;
-  color: gray;
+  color: red;
 }
 
 .sent .seen-icon {
-  color: ${/* blue for seen, gray for not seen */'red'} #4fc3f7;
+  color: red;
 }

@@ -116,6 +116,7 @@ alert("onValue starts run");
          if (data.seen && data.sender === currentUserId) {
            seenHTML = `<span class="seen-icon">"✔✔"</span>`;
            const messageDiv = document.querySelector(".${data.timestamp} div span");
+           alert("it is get in");
            if(messageDiv){
                messageDiv.innerHTML = seenHTML;
            }else{

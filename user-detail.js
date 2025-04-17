@@ -56,7 +56,7 @@ if (!userId || !currentUserId) {
       const user = snapshot.val();
       userInfoDiv.innerHTML = `<strong>Chatting with:</strong> ${user.name} (${user.email})`;
 
-    const userStatusRef = ref(db, `EyobChat/users/${user.uid}/status`);
+    const userStatusRef = ref(db, `EyobChat/users/${userId}/status`);
 
     // Set user status to online
     set(userStatusRef, "online").catch((err) => {
@@ -95,6 +95,7 @@ if (!userId || !currentUserId) {
   
   // Listen for new messages
   onChildAdded(messagesRef, (snapshot) => {
+
   const message = snapshot.val();
   const messageKey = snapshot.key;
 

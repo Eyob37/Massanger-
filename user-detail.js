@@ -54,6 +54,34 @@ if (!userId || !currentUserId) {
     if (snapshot.exists()) {
       const user = snapshot.val();
       userInfoDiv.innerHTML = `<strong>Chatting with:</strong> ${user.name} (${user.email})`;
+
+    const userStatusRef = ref(db, `EyobChat/users/${user.uid}/status`);
+
+    // Set user status to online
+    set(userStatusRef, "online").catch((err) => {
+      console.error("Error setting online status:", err);
+    });
+
+    // Handle disconnection: set user status to offline
+    onDisconnect(userStatusRef)
+      .set("offline")
+      .catch((err) => {
+        console.error("Error setting offline status on disconnect:", err);
+      });
+
+    // Optional: Listen for connection state changes
+    const connectedRef = ref(db, ".info/connected");
+    onValue(connectedRef, (snap) => {
+      if (snap.val() === true) {
+        set(userStatusRef, "online").catch((err) => {
+          console.error("Error setting online status:", err);
+        });
+      } else {
+        set(userStatusRef, "offline").catch((err) => {
+          console.error("Error setting offline status:", err);
+        });
+      }
+    });
     } else {
       userInfoDiv.textContent = "User not found.";
     }

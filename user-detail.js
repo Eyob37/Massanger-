@@ -30,6 +30,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app)
 
 let messagesRef; // Declare globally
+let chatId;
 
 // Get userId from URL
 const params = new URLSearchParams(window.location.search);
@@ -59,8 +60,8 @@ if (!userId || !currentUserId) {
   });
 
   // Generate unique chat room ID
-  const chatId = [currentUserId, userId].sort().join("_");
-   messagesRef = ref(db, `EyobChat/chats/${chatId}/messages`);
+  chatId = [currentUserId, userId].sort().join("_");
+  messagesRef = ref(db, `EyobChat/chats/${chatId}/messages`);
   const metadataRef = ref(db, `EyobChat/chats/${chatId}/metadata`);  
   
   // Listen for new messages

@@ -31,6 +31,7 @@ const db = getDatabase(app)
 
 let messagesRef; // Declare globally
 let chatId;
+let al;
 
 // Get userId from URL
 const params = new URLSearchParams(window.location.search);
@@ -121,7 +122,7 @@ alert("get in the onValue");
            if(messageDiv){
                messageDiv.innerHTML = seenHTML;
            }else{
-             var al = "It can't get";
+              al = "It can't get";
            }          
          }
        }

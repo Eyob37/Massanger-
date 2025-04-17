@@ -119,11 +119,12 @@ onValue(messagesRef, (snapshot) => {
            if(messageDiv){
                messageDiv.innerHTML = seenHTML;
            }else{
-             alert("It can't get");
+             let al = "It can't get";
            }          
          }
        }
      });
+     alert(al);
   });
 });
 

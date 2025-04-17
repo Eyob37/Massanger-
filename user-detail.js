@@ -121,7 +121,7 @@ alert("get in the onValue");
            if(messageDiv){
                messageDiv.innerHTML = seenHTML;
            }else{
-             let al = "It can't get";
+             var al = "It can't get";
            }          
          }
        }

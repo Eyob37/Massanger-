@@ -104,6 +104,7 @@ if (!userId || !currentUserId) {
 }
 
 onValue(messagesRef, (snapshot) => {
+alert("get in the onValue");
   snapshot.forEach((chatSnap) => {
      const RN = chatSnap.key;
      let seenHTML = "";
@@ -124,7 +125,7 @@ onValue(messagesRef, (snapshot) => {
          }
        }
      });
-     alert(al);
+     if(al) alert(al);
   });
 });
 

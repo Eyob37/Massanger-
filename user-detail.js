@@ -31,7 +31,6 @@ const db = getDatabase(app)
 
 let messagesRef; // Declare globally
 let chatId;
-let al;
 
 // Get userId from URL
 const params = new URLSearchParams(window.location.search);
@@ -104,32 +103,6 @@ if (!userId || !currentUserId) {
     }
   });
 }
-
-onValue(messagesRef, (snapshot) => {
-alert("get in the onValue");
-  snapshot.forEach((chatSnap) => {
-     const RN = chatSnap.key;
-     let seenHTML = "";
-     const messageRef = ref(db, `EyobChat/chats/${chatId}/messages/${RN}`);
-
-     get(messageRef).then((snapshot) => {
-       if (snapshot.exists()) {
-         const data = snapshot.val();
-         if (data.seen && data.sender === currentUserId) {
-           seenHTML = `<span class="seen-icon">"✔✔"</span>`;
-           const messageDiv = document.querySelector(".${data.timestamp} div span");
-         
-           if(messageDiv){
-               messageDiv.innerHTML = seenHTML;
-           }else{
-              al = "It can't get";
-           }          
-         }
-       }
-     });
-     if(al) alert(al);
-  });
-});
 
 function displayMessage(msg) {
   const messageDiv = document.createElement("div");

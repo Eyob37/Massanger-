@@ -55,3 +55,62 @@ a {
 a:hover {
   text-decoration: underline;
 }
+.glow-text {
+  font-size: 2.5em;
+  color: #fff;
+  text-align: center;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+i {
+        color: white;
+        transition: color 2s linear, transform 0.5s ease-in-out;      
+        display: inline-block; 
+    }
+
+    
+    i:hover {
+        transform: scale(1.2) rotateY(180deg); 
+        color: #ffcc00; 
+    }
+
+    /* Keyframes for a more dynamic animation */
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-50px);
+        }
+    }
+
+    /* Applying the float animation to each letter */
+    i {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    /* Staggered animation delay for each letter */
+    i:nth-child(1) { animation-delay: 0s; }
+    i:nth-child(2) { animation-delay: 0.2s; }
+    i:nth-child(3) { animation-delay: 0.4s; }
+    i:nth-child(4) { animation-delay: 0.6s; }
+    i:nth-child(5) { animation-delay: 0.8s; }
+    i:nth-child(6) { animation-delay: 1s; }
+    i:nth-child(7) { animation-delay: 1.2s; }
+     i:nth-child(8) { animation-delay: 1.4s; }
+    i:nth-child(9) { animation-delay: 1.6s; }
+    i:nth-child(10) { animation-delay: 0.4s; }
+    i:nth-child(11) { animation-delay: 0.6s; }
+    i:nth-child(12) { animation-delay: 0.8s; }
+    i:nth-child(13) { animation-delay: 1s; }
+    i:nth-child(14) { animation-delay: 1.2s; }
+   
+
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff;
+  }
+  100% {
+    text-shadow: 0 0 10px #f0f, 0 0 20px #f0f, 0 0 30px #f0f;
+  }
+}

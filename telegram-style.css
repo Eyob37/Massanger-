@@ -132,7 +132,7 @@ body {
   gap: 15px;
 }
 
-menu button {
+.sidebar-header button {
   background-color: var(--secondary-color);
   color: white;
   border: none;
@@ -147,7 +147,27 @@ menu button {
   gap: 10px;
 }
 
-menu button:hover {
+..sidebar-header button:hover {
+  background-color: var(--secondary-dark);
+  transform: translateY(-2px);
+}
+
+.sidebar-menu button {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  margin: 5px;
+  gap: 10px;
+}
+
+.sidebar-menu button:hover {
   background-color: var(--secondary-dark);
   transform: translateY(-2px);
 }

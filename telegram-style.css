@@ -132,7 +132,7 @@ body {
   gap: 15px;
 }
 
-.sidebar-menu button {
+menu button {
   background-color: var(--secondary-color);
   color: white;
   border: none;
@@ -143,10 +143,11 @@ body {
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
+  margin: 5px;
   gap: 10px;
 }
 
-.sidebar-menu button:hover {
+menu button:hover {
   background-color: var(--secondary-dark);
   transform: translateY(-2px);
 }

@@ -29,6 +29,11 @@ body {
   gap: 12px;
 }
 
+#chat-controls{
+  position: absolute;
+  bottom: 2px;
+}
+
 .message {
   margin: 5px 0;
   padding: 12px 15px;

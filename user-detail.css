@@ -31,7 +31,7 @@ body {
 }
 
 #chat-controls{
-  position: absolute;
+  position: fixed;
   bottom: 2px;
 }
 

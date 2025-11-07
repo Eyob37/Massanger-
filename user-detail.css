@@ -19,6 +19,7 @@ body {
   border: 1px solid #e0e0e0;
   padding: 15px;
   height: 100vh;
+  width: 97vw;
   overflow-y: scroll;
   margin-bottom: 15px;
   background: white;

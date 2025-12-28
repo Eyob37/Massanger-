@@ -140,6 +140,9 @@ function displayMessage(msg) {
     </div>
   `;
 
+messageDiv.addEventListener("dblclick", ()={
+  navigator.clipboard.writeText(msg.text);
+});
   chatBox.appendChild(messageDiv);
   chatBox.scrollTop = chatBox.scrollHeight;
 }

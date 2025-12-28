@@ -140,7 +140,7 @@ function displayMessage(msg) {
     </div>
   `;
 
-messageDiv.addEventListener("dblclick", ()={
+messageDiv.addEventListener("dblclick", ()=>{
   navigator.clipboard.writeText(msg.text);
 });
   chatBox.appendChild(messageDiv);
